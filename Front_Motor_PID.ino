@@ -262,9 +262,7 @@ oldPosition = x-x_offset;
 //  pwm += 10;
 //  delay(1000);
 //  
-  Serial.print("(" + String(pwm)); 
-  Serial.print(",");
-  Serial.println(String(current_vel) + ")");
+  Serial.println( String(pwm) + " " + String(current_vel)); 
   
 
 }
