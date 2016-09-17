@@ -35,6 +35,16 @@ float K_d = 0.05;
 float K_i = 0;
 
 
+//voltage constants and variables
+const int VOLTAGE_PIN = 63; //A9
+float VOLTAGE_CONST = 14.2;
+float battery_voltage = 0;
+float VELOCITY_VOLTAGE_K = 1.7936;
+float VELOCITY_VOLTAGE_C = -1.2002;
+
+float desired_velocity = 0;
+
+
 void setup() {
     Serial.begin(9600);  
 
@@ -95,34 +105,56 @@ void setup() {
   //the follwing loop will not terminate until wheel passes front tick on encoder twice. The second time should be passed very slowly- 
   //this will allow for the most accurate location to be found for the center alignment of the front wheel with the bike.
   //WHEN MANUALLY CONFIGURING THE WHEEL, MOVE SLOWLY TO FIND INDEX TICK VALUE IN ORDER TO HAVE THE LEAST ERROR
-  while(y==oldIndex){
-    y = REG_TC0_CV1;
-}  
+//  while(y==oldIndex){
+//    y = REG_TC0_CV1;
+//}  
 //redefine oldIndex to now be current y value
    oldIndex = y;
 
 //set x offset to define where the front tick is with respect to the absolute position of the encoder A and B channels
    x_offset = REG_TC0_CV0;
 
+   
+//////////////////test transient behavior////////////////////////////
+//  analogWrite(PWM_front, 30); 
+//  delay(5000);
+/////////////////////////////////////////////////////////////////////
 }  
 
 //create a varaible to convert error to pwm output value
 int scaled_error=0;
 int pwm = 0;
+float timme  = 0;
 
 void loop() {
     //read latest input from serial window
 //    if (Serial.available()) {  //checks if there has been a value inputted to the serial window
 //    desired_pos = (Serial.parseFloat()*M_PI/180);   //reads in float value, converts it to radians
-//  }
-  pwm += 5;
+//  } 
+
+///////////////////////////updated volatge part/////////////////////////////////////
+//  battery_voltage = analogRead(VOLTAGE_PIN);
+//  Serial.println("pin 63 output " + String(battery_voltage));
+//  battery_voltage = battery_voltage/VOLTAGE_CONST;
+//
+//  Serial.println("voltage is " + String(battery_voltage));
+//  desired_velocity = 15;
+//  pwm = 256*(desired_velocity - VELOCITY_VOLTAGE_C)/(battery_voltage * VELOCITY_VOLTAGE_K);
+//  Serial.println("pwm is  " + String(pwm));
   
-  if (pwm > 250) {
-    pwm = 0;
-  }
- 
-  analogWrite(PWM_front, pwm);
-  delay(2000);
+//
+//  if (desired_velocity > 18 ){
+//    //put in the warning
+//  }
+//  analogWrite(PWM_front, pwm);
+//  
+//  delay(2000);
+
+/////////////////////////////////////////////////////////////////////////////////
+  
+
+  
+
   
 //  Serial.print("desired angle:      ");
 //  Serial.println(desired_pos);
@@ -233,14 +265,6 @@ void loop() {
 //  analogWrite(PWM_front, abs(total_error));
 
 
-
-
-
-
-
-
-  
-
 oldPosition = x-x_offset;
 //int pwm = 0;
 //
@@ -262,7 +286,17 @@ oldPosition = x-x_offset;
 //  pwm += 10;
 //  delay(1000);
 //  
-  Serial.println( String(pwm) + " " + String(current_vel)); 
+
+
+//////////////////test transient behavior////////////////////////////
+//  delay(20);
+//  timme = timme + 1;
+//  Serial.println(String(timme*50/1000) + " "+ String(current_vel)); 
+//  analogWrite(PWM_front, 50);
+  
+
+ /////////////////////////////////////////////////////////////////
+  
   
 
 }
