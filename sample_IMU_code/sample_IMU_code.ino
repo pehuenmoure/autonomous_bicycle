@@ -54,25 +54,25 @@ void loop() {
 
  // Clear the internal data buffer on the IMU
  byte result = transferByte(0x01);
-     Serial.print("Cleared internal buffer. Result: "),Serial.println(result);
+//     Serial.print("Cleared internal buffer. Result: "),Serial.println(result);
 
  // Send start of packet:
  result = transferByte(0xF6);
-      Serial.print("Send start of packet. Result: "),Serial.println(result);
+//      Serial.print("Send start of packet. Result: "),Serial.println(result);
  
  // Send command (tared euler angles)
  result = transferByte(0x01);
-      Serial.print("Send commmand 0x01. Result: "),Serial.println(result);
+//      Serial.print("Send commmand 0x01. Result: "),Serial.println(result);
  
  // Get status of device:
  result = transferByte(0xFF);
-      Serial.print("Status of device. Result: "),Serial.println(result);
+//      Serial.print("Status of device. Result: "),Serial.println(result);
 
-// while (result != 0x01) {  // Repeat until device is Ready
-//   delay(1);
-//   result = transferByte(0xFF);
+ while (result != 0x01) {  // Repeat until device is Ready
+   delay(1);
+   result = transferByte(0xFF);
 //   Serial.print("Status of device. Result: "),Serial.println(result);
-// }
+ }
  
  // Get the 12 bytes of return data from the device:
  for (int ii=0; ii<3; ii++) {
@@ -89,9 +89,9 @@ void loop() {
  }
  
  
- Serial.print("fval 1:"), Serial.println(data[0].fval);
- Serial.print("fval 2:"), Serial.println(data[1].fval);
+// Serial.print("fval 1:"), Serial.println(data[0].fval);
+// Serial.print("fval 2:"), Serial.println(data[1].fval);
  Serial.print("fval 3:"), Serial.println(data[2].fval);
 
- delay(3000);
+  delay(10);
 }
