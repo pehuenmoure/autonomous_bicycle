@@ -161,28 +161,18 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(RC_CH6), ISR_CH6, CHANGE);
   analogWrite(PWM_rear, 100);
 
-  //request desired angle value, do not proceed until an angle value has been provided
-//  int  message_delivered = 0;
-//   while (!(Serial.available())) {
-//
-//    if (message_delivered == 0) {
-//      Serial.println("enter an angular float value between -45.0 and 45.0 degrees, then rotate wheel past the center line twice (in different directions) to calibrate ");
-//      message_delivered = 1;
-//    }
-//   }
-
-
   //the follwing loop will not terminate until wheel passes front tick on encoder twice. The second time should be passed very slowly- 
   //this will allow for the most accurate location to be found for the center alignment of the front wheel with the bike.
   //WHEN MANUALLY CONFIGURING THE WHEEL, MOVE SLOWLY TO FIND INDEX TICK VALUE IN ORDER TO HAVE THE LEAST ERROR
 
-  Serial.println("Manually set encoder, ask will about it");
-  while(indexValue==oldIndex){
-    indexValue = REG_TC0_CV1;
-  }  
-  //redefine oldIndex to now be current y value
-   oldIndex = indexValue;
-   x_offset = REG_TC0_CV0;
+//  Serial.println("Manually set encoder, ask will about it");
+//  while(indexValue==oldIndex){
+//    indexValue = REG_TC0_CV1;
+//  }  
+//  //redefine oldIndex to now be current y value
+//   oldIndex = indexValue;
+//   x_offset = REG_TC0_CV0;
+  
 }
 
 /*
@@ -285,10 +275,10 @@ struct roll_t updateIMUData(){
   //get data from IMU
   float roll_angle = getIMU(0x01);   //get roll angle
   Serial.print("\nRoll Angle: ");
-  Serial.print(roll_angle*180/3.14159,4);
+  Serial.print(roll_angle,4);
   float roll_rate = getIMU(0x26);    //get roll rate
   Serial.print("\t\tRoll Rate: ");
-  Serial.print(roll_rate*180/3.14159,4);
+  Serial.print(roll_rate,4);
   Serial.print("\n--------------------------------------------------");  
   roll_d.angle = roll_angle;
   roll_d.rate = roll_rate;
@@ -296,10 +286,10 @@ struct roll_t updateIMUData(){
 }
 
 void loop() {
-//  float encoder_position = updateEncoderPosition();
+  float encoder_position = updateEncoderPosition();
   roll_t imu_data = updateIMUData();
-//  float desiredVelocity = balanceController(imu_data.angle, imu_data.rate, encoder_position);//NEED TO UPDATE ROLL ANGLE AND RATE
-//  frontWheelControl(desiredVelocity);  //DESIRED VELOCITY FROM BALANCE CONTROLLER - NEED TO UPDATE
+  float desiredVelocity = balanceController(imu_data.angle, imu_data.rate, encoder_position);//NEED TO UPDATE ROLL ANGLE AND RATE
+  frontWheelControl(desiredVelocity);  //DESIRED VELOCITY FROM BALANCE CONTROLLER - NEED TO UPDATE
 }
 
 //Interrupt Service Routines
