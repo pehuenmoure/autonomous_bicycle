@@ -29,20 +29,22 @@ float pos_error = 0;
 float total_error = 0;
 float sp_error = 0;
 float sv_error = 0;
+float t = 0;
+float delta_t = 0;
 
-float K_p = 100/(M_PI/2);
-float K_d = 0.05;
+float StepValues[1100];
+int k = 0;
+
+float K_p = 60;
+float K_d = 2.5;
 float K_i = 0;
 
+//for (i = 1:100)
+//
+//
+//end
 
-//voltage constants and variables
-const int VOLTAGE_PIN = 63; //A9
-float VOLTAGE_CONST = 14.2;
-float battery_voltage = 0;
-float VELOCITY_VOLTAGE_K = 1.7936;
-float VELOCITY_VOLTAGE_C = -1.2002;
 
-float desired_velocity = 0;
 
 
 void setup() {
@@ -92,72 +94,86 @@ void setup() {
   signed int y = REG_TC0_CV1;
   oldIndex = y;
 
-//request desired angle value, do not proceed until an angle value has been provided
-  int  message_delivered = 0;
-   while (!(Serial.available())) {
-
-    if (message_delivered == 0) {
-      Serial.println("enter an angular float value between -45.0 and 45.0 degrees, then rotate wheel past the center line twice (in different directions) to calibrate ");
-      message_delivered = 1;
-    }
-   }
+////request desired angle value, do not proceed until an angle value has been provided
+//  int  message_delivered = 0;
+//   while (!(Serial.available())) {
+//
+//    if (message_delivered == 0) {
+//      Serial.println("enter an angular float value between -45.0 and 45.0 degrees, then rotate wheel past the center line twice (in different directions) to calibrate ");
+//      message_delivered = 1;
+//    }
+//   }
 
   //the follwing loop will not terminate until wheel passes front tick on encoder twice. The second time should be passed very slowly- 
   //this will allow for the most accurate location to be found for the center alignment of the front wheel with the bike.
   //WHEN MANUALLY CONFIGURING THE WHEEL, MOVE SLOWLY TO FIND INDEX TICK VALUE IN ORDER TO HAVE THE LEAST ERROR
-  while(y==oldIndex){
-    y = REG_TC0_CV1;
-}  
-//redefine oldIndex to now be current y value
+//  while(y==oldIndex){
+//    y = REG_TC0_CV1;
+//}  
+////redefine oldIndex to now be current y value
    oldIndex = y;
 
 //set x offset to define where the front tick is with respect to the absolute position of the encoder A and B channels
    x_offset = REG_TC0_CV0;
 
-   
-//////////////////test transient behavior////////////////////////////
-//  analogWrite(PWM_front, 30); 
-//  delay(5000);
-/////////////////////////////////////////////////////////////////////
+delay(2000) ;
+
+int i;
+int j;
+
+//for (i = 0; i < 220; i = i+20) {
+//  for (j = 0; j<20; j++) {
+//  StepValues[i+j] = -M_PI/2 + (i/20)*M_PI/10;
+//  }
+//  
+//}
+
+
+
+for (i = 0; i < 55; i = i+5) {
+  for (j = 0; j<5; j++) {
+  StepValues[i+j] = -M_PI/2 + (i/5)*M_PI/10;
+  }
+  
+}
+
 }  
 
 //create a varaible to convert error to pwm output value
 int scaled_error=0;
-int pwm = 0;
-float timme  = 0;
+
+//create an array to provide as an input step function
 
 void loop() {
-    //read latest input from serial window
+
+
+//define desired position to be a step function which steps through the previous constructed array StepValues every time the loop iterates
+//desired_pos = StepValues[k] ;
+//
+//Serial.println(StepValues[k]) ;
+//k++ ;
+
+
+//Define desired position to be a sine wave. This will be used when comparing the output plot of position of the wheel in order to show the responsiveness of the motor
+ t = micros()/(10*10^6);
+
+ 
+Serial.print("t:");   Serial.println(t);
+ //desired_pos = 1*sin(0.01*t); //sine function oscillating between -.75 and .75 such that the overall position does not exceed -45 to 45 degrees
+ 
+//
+  long sine_test = 1*sin(0.01*t) ;
+  
+
+  Serial.print("output:");   Serial.println(sine_test);
+
+//    //read latest input from serial window
 //    if (Serial.available()) {  //checks if there has been a value inputted to the serial window
 //    desired_pos = (Serial.parseFloat()*M_PI/180);   //reads in float value, converts it to radians
-//  } 
-
-///////////////////////////updated volatge part/////////////////////////////////////
-//  battery_voltage = analogRead(VOLTAGE_PIN);
-//  Serial.println("pin 63 output " + String(battery_voltage));
-//  battery_voltage = battery_voltage/VOLTAGE_CONST;
-//
-//  Serial.println("voltage is " + String(battery_voltage));
-//  desired_velocity = 15;
-//  pwm = 256*(desired_velocity - VELOCITY_VOLTAGE_C)/(battery_voltage * VELOCITY_VOLTAGE_K);
-//  Serial.println("pwm is  " + String(pwm));
-  
-//
-//  if (desired_velocity > 18 ){
-//    //put in the warning
 //  }
-//  analogWrite(PWM_front, pwm);
-//  
-//  delay(2000);
-
-/////////////////////////////////////////////////////////////////////////////////
   
-
-  
-
-  
-//  Serial.print("desired angle:      ");
-//  Serial.println(desired_pos);
+  //Serial.print("desired angle:      ");
+  //Serial.println(desired_pos);
 
   
   digitalWrite(REnot, LOW);
@@ -196,16 +212,16 @@ void loop() {
   //calculate position error (rad)
   pos_error = desired_pos - current_pos ;
 
-//  Serial.print("current position:      ");  Serial.println(current_pos); 
-//  Serial.print("error:");   Serial.println(pos_error);
+  //Serial.print("current position:      ");  Serial.println(current_pos); 
+  //Serial.print("error:");   Serial.println(pos_error);
 
 
   //scaled positional error
 //position scaling factor K_p = 100/(M_PI/2) found by taking 100 (100 being max pwm value I want to reach), and dividing by theoretical max absolute value of angle (Pi/2). This means with angles in that range, 100 will be the max PWM value outputted to the motor
-  sp_error = (int) (K_p*pos_error);
-  //Serial.print("SP error:");   Serial.println(sp_error);
+  sp_error =  (K_p*pos_error);
+  //Serial.print("Pos error:");   Serial.println(sp_error);
   
-//
+
 //    if (sp_error > 0) {
 //  digitalWrite(DIR, LOW);    //direction DIR LOW will turn the motor counterclockwise
 //  }
@@ -214,15 +230,19 @@ void loop() {
 //  }
 //
 //  analogWrite(PWM_front, abs(sp_error)); 
-
+//
 
  //D term
  //calculate velocity error
+
  
  unsigned long currentMicros = micros();
   current_vel = (((((x-x_offset)-oldPosition)*0.02197*1000000*M_PI/180.0)/(currentMicros-previousMicros)));   //Angular Speed(rad/s)
+  
+delta_t = currentMicros-previousMicros ;
 
-//  Serial.print("current velocity:     "); Serial.println(current_vel);
+//Serial.print("delta_t");   Serial.println(delta_t);
+  //Serial.print("current velocity:     "); Serial.println(current_vel);
 
 //try writing a PWM value to the motor that will resist the manual rotation of the wheel using the velocity.
 
@@ -235,7 +255,7 @@ void loop() {
 //  digitalWrite(DIR, LOW);     //Conversely, if wheel is rotating in CW direction, motor should spin CCW to resist this motion
 //  }
 //
-//    int resistance_velocity = (int) .5*current_vel;
+//    int resistance_velocity = (int) .7*current_vel;
 //    analogWrite(PWM_front, resistance_velocity);
 ////  
 
@@ -248,56 +268,35 @@ void loop() {
   previousMicros = currentMicros;
   
 
-  //the value of the velocity error will be negative of the current velocity (in order to resist current direction of motion). Calculated as target_velocity - current_velocity where target velocity is always 0
+ // the value of the velocity error will be negative of the current velocity (in order to resist current direction of motion). Calculated as target_velocity - current_velocity where target velocity is always 0
   
   //scaled velocity error
-//  sv_error = (int) abs(K_d*current_vel)  ;
-//
-//  total_error = sp_error ;
-//
-//  if (total_error > 0) {
-//  digitalWrite(DIR, LOW); 
-//  }
-//  else {
-//  digitalWrite(DIR, HIGH);
-//  }
+  sv_error =  (-K_d*current_vel)  ;
 
-//  analogWrite(PWM_front, abs(total_error));
 
+  //Serial.print("Vel error:");   Serial.println(sv_error);
+  
+  total_error =  sp_error + sv_error ;
+
+  if (total_error > 0) {
+  digitalWrite(DIR, LOW); 
+  }
+  else {
+  digitalWrite(DIR, HIGH);
+  }
+
+  analogWrite(PWM_front, abs((int)(total_error)));
+
+
+
+
+
+
+
+
+  
 
 oldPosition = x-x_offset;
-//int pwm = 0;
-//
-// while (pwm < 180){
-//    analogWrite(PWM_front, pwm);
-//    pwm += 10;
-//    delay(1000);
-//    signed int x = REG_TC0_CV0;
-//    signed int y = REG_TC0_CV1;
-//    oldPosition = x-x_offset;
-//    current_pos = (((x - x_offset) * 0.02197 * M_PI)/180); //Angle (rad)
-//    unsigned long currentMicros = micros();
-//    current_vel = (((((x-x_offset)-oldPosition)*0.02197*1000000*M_PI/180.0)/(currentMicros-previousMicros)));   //Angular Speed(rad/s)
-//    Serial.println(String(pwm) + "  " + String(current_vel));
-//    previousMicros = currentMicros;
-//    oldPosition = x-x_offset;
-//   }
-//  analogWrite(PWM_front, pwm);
-//  pwm += 10;
-//  delay(1000);
-//  
-
-
-//////////////////test transient behavior////////////////////////////
-//  delay(20);
-//  timme = timme + 1;
-//  Serial.println(String(timme*50/1000) + " "+ String(current_vel)); 
-//  analogWrite(PWM_front, 50);
-  
-
- /////////////////////////////////////////////////////////////////
-  
-  
 
 }
   //oldIndex = y;

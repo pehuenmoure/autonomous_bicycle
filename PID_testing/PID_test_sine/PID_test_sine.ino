@@ -50,23 +50,6 @@ float K_p = 60;
 float K_d = 2.5;
 float K_i = 0;
 
-//Watchdog
-#define WDI 42
-#define EN 41
-
-//Landing Gear
-#define relay1 48
-#define relay2 47
-#define relay3 50
-#define relay4 49
-
-//RC
-#define RC_CH1 51     //Steer Angle (Brown)
-#define RC_CH2 28     //(Red)
-#define RC_CH3 25     //Velocity (Orange)
-#define RC_CH4 33     //(Yellow)
-#define RC_CH5 27     //Kill Switch (Green)
-#define RC_CH6 32     //Landing Gear (Blue)
 //timers for each channel
 int duration_CH1, duration_CH2, duration_CH3, duration_CH4, duration_CH5, duration_CH6;
 int start_CH1, start_CH2, start_CH3, start_CH4, start_CH5, start_CH6;
@@ -76,7 +59,6 @@ boolean CH1, CH2, CH3, CH4, CH5, CH6;
 //RC variables
 float desired_angle;  //CH1
 int PWM_rear_output;  //CH3
-
 
 //voltage constants and variables
 const int VOLTAGE_PIN = 63; //A9
@@ -134,32 +116,32 @@ void setup() {
   pinMode (PWM_front, OUTPUT);
   pinMode (PWM_rear, OUTPUT);    
 
-  //setup Watchdog
-  pinMode(WDI, OUTPUT);
-  pinMode(EN, OUTPUT);
-  digitalWrite(EN, LOW);
-
-  //setup Landing Gear
-  pinMode(relay1, OUTPUT);
-  pinMode(relay2, OUTPUT);
-  pinMode(relay3, OUTPUT);
-  pinMode(relay4, OUTPUT);
-
-  //setup RC
-  pinMode(RC_CH1, INPUT);
-  pinMode(RC_CH2, INPUT);
-  pinMode(RC_CH3, INPUT);
-  pinMode(RC_CH4, INPUT);
-  pinMode(RC_CH5, INPUT);
-  pinMode(RC_CH6, INPUT);
-
-  attachInterrupt(digitalPinToInterrupt(RC_CH1), ISR_CH1, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(RC_CH2), ISR_CH2, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(RC_CH3), ISR_CH3, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(RC_CH4), ISR_CH4, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(RC_CH5), ISR_CH5, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(RC_CH6), ISR_CH6, CHANGE);
-  analogWrite(PWM_rear, 100);
+//  //setup Watchdog
+//  pinMode(WDI, OUTPUT);
+//  pinMode(EN, OUTPUT);
+//  digitalWrite(EN, LOW);
+//
+//  //setup Landing Gear
+//  pinMode(relay1, OUTPUT);
+//  pinMode(relay2, OUTPUT);
+//  pinMode(relay3, OUTPUT);
+//  pinMode(relay4, OUTPUT);
+//
+//  //setup RC
+//  pinMode(RC_CH1, INPUT);
+//  pinMode(RC_CH2, INPUT);
+//  pinMode(RC_CH3, INPUT);
+//  pinMode(RC_CH4, INPUT);
+//  pinMode(RC_CH5, INPUT);
+//  pinMode(RC_CH6, INPUT);
+//
+//  attachInterrupt(digitalPinToInterrupt(RC_CH1), ISR_CH1, CHANGE);
+//  attachInterrupt(digitalPinToInterrupt(RC_CH2), ISR_CH2, CHANGE);
+//  attachInterrupt(digitalPinToInterrupt(RC_CH3), ISR_CH3, CHANGE);
+//  attachInterrupt(digitalPinToInterrupt(RC_CH4), ISR_CH4, CHANGE);
+//  attachInterrupt(digitalPinToInterrupt(RC_CH5), ISR_CH5, CHANGE);
+//  attachInterrupt(digitalPinToInterrupt(RC_CH6), ISR_CH6, CHANGE);
+//  analogWrite(PWM_rear, 100);
 
   //request desired angle value, do not proceed until an angle value has been provided
 //  int  message_delivered = 0;
@@ -175,8 +157,7 @@ void setup() {
   //the follwing loop will not terminate until wheel passes front tick on encoder twice. The second time should be passed very slowly- 
   //this will allow for the most accurate location to be found for the center alignment of the front wheel with the bike.
   //WHEN MANUALLY CONFIGURING THE WHEEL, MOVE SLOWLY TO FIND INDEX TICK VALUE IN ORDER TO HAVE THE LEAST ERROR
-
-  Serial.println("Manually set encoder, ask will about it");
+  
   while(indexValue==oldIndex){
     indexValue = REG_TC0_CV1;
   }  
@@ -228,8 +209,8 @@ float updateEncoderPosition(){
 /*
  * takes in desired position and applies a PID controller to minimize error between current position and desired position
  */
-void frontWheelControl(float desiredVelocity){
-  float desired_pos = eulerIntegrate(desiredVelocity);
+void frontWheelControl(float desired_pos){
+  //float desired_pos = eulerIntegrate(desiredVelocity);
   //P term
   //calculate position error (rad)
   pos_error = desired_pos - current_pos ;
@@ -242,8 +223,8 @@ void frontWheelControl(float desiredVelocity){
 
   //obtain a running average for the value of the time step to use in the Euler integration. This time step 
   //is not constant, but a running average will work as an approximation to calculate desired position from desired velocity
-  numTimeSteps++;
-  averageTimeStep = ((averageTimeStep*(numTimeSteps-1)) + (currentMicros - previousMicros))/numTimeSteps ;
+  //numTimeSteps++;
+  //averageTimeStep = ((averageTimeStep*(numTimeSteps-1)) + (currentMicros - previousMicros))/numTimeSteps ;
   
   //D term
   //calculates velocity error with (desired velocity - current velocity), desired velocity will always be zero
@@ -254,7 +235,7 @@ void frontWheelControl(float desiredVelocity){
   sv_error =  (-K_d*current_vel);
   Serial.print("Vel error:");   Serial.println(sv_error);  
   
-  PID_output =  sp_error + sv_error + velocityToPWM(desiredVelocity);
+  PID_output =  sp_error + sv_error; //+ velocityToPWM(desiredVelocity);
 
   if (PID_output > 0) {
     digitalWrite(DIR, LOW); 
@@ -274,109 +255,63 @@ float balanceController(float roll_angle, float roll_rate, float encoder_angle){
   return desiredSteerRate;
 }
 
-struct roll_t{
-  float rate;
-  float angle;
-};
 
-// Retrieve data from IMU about roll angle and rate and return it
-struct roll_t updateIMUData(){
-  roll_t roll_d;
-  //get data from IMU
-  float roll_angle = getIMU(0x01);   //get roll angle
-  Serial.print("\nRoll Angle: ");
-  Serial.print(roll_angle*180/3.14159,4);
-  float roll_rate = getIMU(0x26);    //get roll rate
-  Serial.print("\t\tRoll Rate: ");
-  Serial.print(roll_rate*180/3.14159,4);
-  Serial.print("\n--------------------------------------------------");  
-  roll_d.angle = roll_angle;
-  roll_d.rate = roll_rate;
-  return roll_d;
+
+
+
+
+void frontWheelControl(){
+  //P term
+  //calculate position error (rad)
+  pos_error = desired_pos - current_pos ;
+
+  //position scaling factor should be a maximum of K_p = 100/(M_PI/2) found by taking 100 (100 being max pwm value I want to reach), and dividing 
+  //by theoretical max absolute value of angle (Pi/2). This means with angles in that range, 100 will be the max PWM value 
+  //outputted to the motor
+  sp_error =  (K_p*pos_error);
+  unsigned long currentMicros = micros();
+  //obtain a running average for the value of the time step to use in the Euler integration. This time step 
+  //is not constant, but a running average will work as an approximation to calculate desired position from desired velocity
+//  numTimeSteps++;
+//  averageTimeStep = ((averageTimeStep*(numTimeSteps-1)) + (currentMicros - previousMicros))/numTimeSteps ;
+  
+  //D term
+  //calculates velocity error with (desired velocity - current velocity), desired velocity will always be zero
+  //
+  current_vel = (((((relativePos-x_offset)-oldPosition)*0.02197*1000000*M_PI/180.0)/(currentMicros-previousMicros)));   //Angular Speed(rad/s)
+  previousMicros = currentMicros;
+
+  sv_error =  (-K_d*current_vel);
+  Serial.print("Vel error:");   Serial.println(sv_error);  
+  
+  PID_output =  sp_error + sv_error; //+ velocityToPWM(desiredVelocity)
+
+  if (PID_output > 0) {
+    digitalWrite(DIR, LOW); 
+  } else {
+    digitalWrite(DIR, HIGH);
+  }
+  analogWrite(PWM_front, abs((int)(PID_output)));
+
+  oldPosition = relativePos-x_offset;
 }
+
+
+unsigned long currentMicros = micros();
+
+//modular test of IMU
+
+void stateUpdate() {
+  desired_pos = .75*sin(micros()*1000000); //sine function oscillating between -.75 and .75 such that the overall position does not exceed -45 to 45 degrees
+  currentMicros = micros();
+}
+
+
 
 void loop() {
-//  float encoder_position = updateEncoderPosition();
-  roll_t imu_data = updateIMUData();
-//  float desiredVelocity = balanceController(imu_data.angle, imu_data.rate, encoder_position);//NEED TO UPDATE ROLL ANGLE AND RATE
-//  frontWheelControl(desiredVelocity);  //DESIRED VELOCITY FROM BALANCE CONTROLLER - NEED TO UPDATE
-}
+  // put your main code here, to run repeatedly:
+  stateUpdate();
+  frontWheelControl(desired_pos);
+  
 
-//Interrupt Service Routines
-void ISR_CH1() {
-  noInterrupts();
-  CH1 = digitalRead(RC_CH1);
-  if (CH1 == HIGH) {
-    start_CH1 = micros();
-  }
-  else {
-    end_CH1 = micros();
-    duration_CH1 = end_CH1 - start_CH1;
-  }
-  interrupts();
-}
-
-void ISR_CH2() {
-  noInterrupts();
-  CH2 = digitalRead(RC_CH2);
-  if (CH2 == HIGH) {
-    start_CH2 = micros();
-  }
-  else {
-    end_CH2 = micros();
-    duration_CH2 = end_CH2 - start_CH2;
-  }
-  interrupts();
-}
-
-void ISR_CH3() {
-  noInterrupts();
-  CH3 = digitalRead(RC_CH3);
-  if (CH3 == HIGH) {
-    start_CH3 = micros();
-  }
-  else {
-    end_CH3 = micros();
-    duration_CH3 = end_CH3 - start_CH3;
-  }
-  interrupts();
-}
-
-void ISR_CH4() {
-  noInterrupts();
-  CH4 = digitalRead(RC_CH4);
-  if (CH4 == HIGH) {
-    start_CH4 = micros();
-  }
-  else {
-    end_CH4 = micros();
-    duration_CH4 = end_CH4 - start_CH4;
-  }
-  interrupts();
-}
-
-void ISR_CH5() {
-  noInterrupts();
-  CH5 = digitalRead(RC_CH5);
-  if (CH5 == HIGH) {
-    start_CH5 = micros();
-  }
-  else {
-    end_CH5 = micros();
-    duration_CH5 = end_CH5 - start_CH5;
-  }
-  interrupts();
-}
-
-void ISR_CH6() {
-  noInterrupts();
-  CH6 = digitalRead(RC_CH6);
-  if (CH6 == HIGH) {
-    start_CH6 = micros();
-  }
-  else {
-    end_CH6 = micros();
-    duration_CH6 = end_CH6 - start_CH6;
-  }
-  interrupts();
 }
