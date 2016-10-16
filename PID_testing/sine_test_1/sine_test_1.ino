@@ -155,17 +155,18 @@ void loop() {
 
 
 //Define desired position to be a sine wave. This will be used when comparing the output plot of position of the wheel in order to show the responsiveness of the motor
- t = micros()/(10*10^6);
+ t = micros()/(10^6);
 
  
-Serial.print("t:");   Serial.println(t);
- //desired_pos = 1*sin(0.01*t); //sine function oscillating between -.75 and .75 such that the overall position does not exceed -45 to 45 degrees
+//Serial.print("t:");   Serial.println(t);
+desired_pos = 1*sin(0.0001*(t));
+Serial.println(String(current_pos) + "\t" + String(desired_pos) + "\t" + String(delta_t));
+desired_pos = 1*sin(0.0001*(t-0.64)); //sine function oscillating between -.75 and .75 such that the overall position does not exceed -45 to 45 degrees
  
 //
-  long sine_test = 1*sin(0.01*t) ;
+//  float sine_test = 1*sin(.001*t) ;
   
-
-  Serial.print("output:");   Serial.println(sine_test);
+//  Serial.print("output:");   Serial.println(sine_test);
 
 //    //read latest input from serial window
 //    if (Serial.available()) {  //checks if there has been a value inputted to the serial window
@@ -206,6 +207,11 @@ Serial.print("t:");   Serial.println(t);
  current_pos = (((x - x_offset) * 0.02197 * M_PI)/180); //Angle (rad)
 
 
+//print out the two sine waves in order to plot input versus output sine waves
+
+
+
+
 //write PID controller based off of error signal received from encoder
 
   //P term
@@ -238,8 +244,12 @@ Serial.print("t:");   Serial.println(t);
  
  unsigned long currentMicros = micros();
   current_vel = (((((x-x_offset)-oldPosition)*0.02197*1000000*M_PI/180.0)/(currentMicros-previousMicros)));   //Angular Speed(rad/s)
-  
-delta_t = currentMicros-previousMicros ;
+
+
+  //calculate the value of the current time step in microseconds
+delta_t = (currentMicros-previousMicros) ;
+
+//Serial.println(String(current_pos) + "\t" + String(desired_pos) + "\t" + String(delta_t));
 
 //Serial.print("delta_t");   Serial.println(delta_t);
   //Serial.print("current velocity:     "); Serial.println(current_vel);
