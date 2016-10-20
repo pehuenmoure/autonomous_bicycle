@@ -1,5 +1,5 @@
 #define in_pin 11 //hall sensor pulse
-#define Sample_length 10
+#define Sample_length 10 //what is this? 
 #define pwm_rear 9
 
 float freq =0;
@@ -16,7 +16,6 @@ attachInterrupt(digitalPinToInterrupt(in_pin), changeState, CHANGE);
 
 void loop() {
 T=pulseInLong(in_pin, HIGH);
-//state=digitalRead(in_pin);
 digitalWrite(in_pin, state);
 Serial.print(state);
 Serial.print(' ');
