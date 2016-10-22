@@ -286,10 +286,10 @@ struct roll_t updateIMUData(){
 }
 
 void loop() {
-  float encoder_position = updateEncoderPosition();
+//  float encoder_position = updateEncoderPosition();
   roll_t imu_data = updateIMUData();
-  float desiredVelocity = balanceController(imu_data.angle, imu_data.rate, encoder_position);//NEED TO UPDATE ROLL ANGLE AND RATE
-  frontWheelControl(desiredVelocity);  //DESIRED VELOCITY FROM BALANCE CONTROLLER - NEED TO UPDATE
+//  float desiredVelocity = balanceController(imu_data.angle, imu_data.rate, encoder_position);//NEED TO UPDATE ROLL ANGLE AND RATE
+//  frontWheelControl(desiredVelocity);  //DESIRED VELOCITY FROM BALANCE CONTROLLER - NEED TO UPDATE
 }
 
 //Interrupt Service Routines

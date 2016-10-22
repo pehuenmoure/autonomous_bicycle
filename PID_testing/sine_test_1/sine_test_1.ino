@@ -35,8 +35,8 @@ float delta_t = 0;
 float StepValues[1100];
 int k = 0;
 
-float K_p = 60;
-float K_d = 2.5;
+float K_p = 190;
+float K_d = 8;
 float K_i = 0;
 
 //for (i = 1:100)
@@ -91,32 +91,43 @@ void setup() {
 
   digitalWrite(REnot, LOW);
   digitalWrite(DE, LOW);
-  signed int y = REG_TC0_CV1;
-  oldIndex = y;
 
-////request desired angle value, do not proceed until an angle value has been provided
-//  int  message_delivered = 0;
-//   while (!(Serial.available())) {
-//
-//    if (message_delivered == 0) {
+//request desired angle value, do not proceed until an angle value has been provided
+  int  message_delivered = 0;
+   while (!(Serial.available())) {
+
+    if (message_delivered == 0) {
 //      Serial.println("enter an angular float value between -45.0 and 45.0 degrees, then rotate wheel past the center line twice (in different directions) to calibrate ");
-//      message_delivered = 1;
-//    }
-//   }
+    Serial.println("press any key to calibrate front wheel") ;
+      message_delivered = 1;
+    }
+   }
 
   //the follwing loop will not terminate until wheel passes front tick on encoder twice. The second time should be passed very slowly- 
   //this will allow for the most accurate location to be found for the center alignment of the front wheel with the bike.
   //WHEN MANUALLY CONFIGURING THE WHEEL, MOVE SLOWLY TO FIND INDEX TICK VALUE IN ORDER TO HAVE THE LEAST ERROR
-//  while(y==oldIndex){
-//    y = REG_TC0_CV1;
-//}  
+  signed int y = REG_TC0_CV1; 
+  oldIndex = y;
+  digitalWrite(DIR, HIGH); 
+  while(y==oldIndex){
+  analogWrite(PWM_front,20);
+  y = REG_TC0_CV1;
+}  
+  
+  delay(500) ;
+  oldIndex = y;
+  digitalWrite(DIR, LOW); 
+  
+  while(y==oldIndex){
+  analogWrite(PWM_front,20);
+  y = REG_TC0_CV1;
+}  
+  
 ////redefine oldIndex to now be current y value
    oldIndex = y;
 
 //set x offset to define where the front tick is with respect to the absolute position of the encoder A and B channels
    x_offset = REG_TC0_CV0;
-
-delay(2000) ;
 
 int i;
 int j;
@@ -160,8 +171,7 @@ void loop() {
  
 //Serial.print("t:");   Serial.println(t);
 desired_pos = 1*sin(0.0001*(t));
-Serial.println(String(current_pos) + "\t" + String(desired_pos) + "\t" + String(delta_t));
-desired_pos = 1*sin(0.0001*(t-0.64)); //sine function oscillating between -.75 and .75 such that the overall position does not exceed -45 to 45 degrees
+//desired_pos = .3*sin(0.00002*(t)); //sine function oscillating between -.75 and .75 such that the overall position does not exceed -45 to 45 degrees
  
 //
 //  float sine_test = 1*sin(.001*t) ;
@@ -190,19 +200,6 @@ desired_pos = 1*sin(0.0001*(t-0.64)); //sine function oscillating between -.75 a
 //when y value changes (when wheel passes index tick) print absolute position of the wheel now to see if encoder absolute position
 //is drifting
 
-      /*
-    if (y!= oldIndex) { 
-    Serial.println("Number of Ticks in that Revolution:  ") ;
-    //Serial.println(oldPosition); //extract old x value, number of ticks before the index tick changed y value
-    //x_offset = x; //absolute x reading when wheel facing forward (z index tripped)
-  } */
-
-  //Serial.println(x_offset);
-//  Serial.print(x - x_offset); 
-//  Serial.print("   ");
-//
-//  Serial.print(y); 
-//  Serial.print("   ");
 
  current_pos = (((x - x_offset) * 0.02197 * M_PI)/180); //Angle (rad)
 
@@ -288,6 +285,9 @@ delta_t = (currentMicros-previousMicros) ;
   
   total_error =  sp_error + sv_error ;
 
+  //print total error to get a sense of how high the values are for a normal sine wave.
+//  Serial.println(total_error) ;
+
   if (total_error > 0) {
   digitalWrite(DIR, LOW); 
   }
@@ -295,10 +295,26 @@ delta_t = (currentMicros-previousMicros) ;
   digitalWrite(DIR, HIGH);
   }
 
-  analogWrite(PWM_front, abs((int)(total_error)));
+//clip the maximum output to the motor by essentially saying "if the value is greater than this threshold, make the output to the motor this exact threshold value"
 
 
+Serial.println(String(current_pos) + "\t" + String(desired_pos) + "\t" + String(delta_t) + "\t" + String(total_error));
 
+
+   if (total_error > 100 || total_error < -100) {
+      analogWrite(PWM_front, 100);
+   }
+   
+   else { 
+    analogWrite(PWM_front, abs((int)(total_error))); 
+   }
+
+//   else if (total_error < -100) {
+//      analogWrite(PWM_front, 100);
+//   }
+//  
+
+  
 
 
 
