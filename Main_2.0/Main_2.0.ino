@@ -200,8 +200,8 @@ int velocityToPWM (float desiredVelocity) {
  * intakes commanded velocity from balance controller
  * converts commanded velocity into commanded position
  */
-int eulerIntegrate(float desiredVelocity){
-  float desiredPosition = desiredVelocity*averageTimeStep ;
+int eulerIntegrate(float desiredVelocity, float current_pos){
+  float desiredPosition = current_pos + desiredVelocity*averageTimeStep ;
   return desiredPosition;
 }
 
@@ -218,10 +218,11 @@ float updateEncoderPosition(){
 /*
  * takes in desired position and applies a PID controller to minimize error between current position and desired position
  */
-void frontWheelControl(float desiredVelocity){
-  float desired_pos = eulerIntegrate(desiredVelocity);
+void frontWheelControl(float desiredVelocity, float current_pos){
+  float desired_pos = eulerIntegrate(desiredVelocity, current_pos);
+  
   //P term
-  //calculate position error (rad)
+  //calculate position err desired_posor (rad)
   pos_error = desired_pos - current_pos ;
 
   //position scaling factor should be a maximum of K_p = 100/(M_PI/2) found by taking 100 (100 being max pwm value I want to reach), and dividing 
@@ -234,7 +235,7 @@ void frontWheelControl(float desiredVelocity){
   //is not constant, but a running average will work as an approximation to calculate desired position from desired velocity
   numTimeSteps++;
   averageTimeStep = ((averageTimeStep*(numTimeSteps-1)) + (currentMicros - previousMicros))/numTimeSteps ;
-  
+  e
   //D term
   //calculates velocity error with (desired velocity - current velocity), desired velocity will always be zero
   //
@@ -289,7 +290,7 @@ void loop() {
 //  float encoder_position = updateEncoderPosition();
   roll_t imu_data = updateIMUData();
 //  float desiredVelocity = balanceController(imu_data.angle, imu_data.rate, encoder_position);//NEED TO UPDATE ROLL ANGLE AND RATE
-//  frontWheelControl(desiredVelocity);  //DESIRED VELOCITY FROM BALANCE CONTROLLER - NEED TO UPDATE
+//  frontWheelControl(desiredVelocity, encoder_position);  //DESIRED VELOCITY FROM BALANCE CONTROLLER - NEED TO UPDATE
 }
 
 //Interrupt Service Routines
