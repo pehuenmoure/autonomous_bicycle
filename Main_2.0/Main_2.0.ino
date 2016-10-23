@@ -1,4 +1,5 @@
 #include "IMU.h"
+#include "PID.h"
 #include <math.h>
 
 /*Define definite variables*/
@@ -26,7 +27,7 @@ int REnot = 3;
 int DE = 4;
 signed int oldPosition  = 0;
 signed int oldIndex = 0;
-unsigned long previousMicros = 0;
+unsigned long previous_t = 0;
 signed int x_offset = 0;
 float desired_pos = 0;
 float current_pos = 0;
@@ -46,9 +47,9 @@ float averageTimeStep = 0;
 float desired_steer = 0;
 
 //front motor PID contants
-float K_p = 60;
-float K_d = 2.5;
-float K_i = 0;
+//float K_p = 60;
+//float K_d = 2.5;
+//float K_i = 0;
 
 //Watchdog
 #define WDI 42
@@ -153,31 +154,44 @@ void setup() {
   pinMode(RC_CH5, INPUT);
   pinMode(RC_CH6, INPUT);
 
-  attachInterrupt(digitalPinToInterrupt(RC_CH1), ISR_CH1, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(RC_CH2), ISR_CH2, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(RC_CH3), ISR_CH3, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(RC_CH4), ISR_CH4, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(RC_CH5), ISR_CH5, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(RC_CH6), ISR_CH6, CHANGE);
   analogWrite(PWM_rear, 100);
+  //request desired angle value, do not proceed until an angle value has been provided
+  int  message_delivered = 0;
+   while (!(Serial.available())) {
+    if (message_delivered == 0) {
+      Serial.println("press any key to calibrate front wheel") ;
+      message_delivered = 1;
+    }
+   }
 
   //the follwing loop will not terminate until wheel passes front tick on encoder twice. The second time should be passed very slowly- 
   //this will allow for the most accurate location to be found for the center alignment of the front wheel with the bike.
-  //WHEN MANUALLY CONFIGURING THE WHEEL, MOVE SLOWLY TO FIND INDEX TICK VALUE IN ORDER TO HAVE THE LEAST ERROR
-
-//  Serial.println("Manually set encoder, ask will about it");
-//  while(indexValue==oldIndex){
-//    indexValue = REG_TC0_CV1;
-//  }  
-//  //redefine oldIndex to now be current y value
-//   oldIndex = indexValue;
-//   x_offset = REG_TC0_CV0;
+  signed int y = REG_TC0_CV1; 
+  oldIndex = y;
+  digitalWrite(DIR, HIGH); 
+  while(y==oldIndex){
+    analogWrite(PWM_front,20);
+    y = REG_TC0_CV1;
+  }  
   
+  delay(500) ;
+  oldIndex = y;
+  digitalWrite(DIR, LOW); 
+  
+  while(y==oldIndex){
+    analogWrite(PWM_front,20);
+    y = REG_TC0_CV1;
+  }  
+  
+  //redefine oldIndex to now be current y value
+   oldIndex = y;
+
+  //set x offset to define where the front tick is with respect to the absolute position of the encoder A and B channels
+   x_offset = REG_TC0_CV0;
+
 }
 
-/*
- * takes in desired angular velocity returns pwm
- */
+/* takes in desired angular velocity returns pwm */
 int velocityToPWM (float desiredVelocity) { 
   battery_voltage = analogRead(VOLTAGE_PIN);
   Serial.println("pin 63 output " + String(battery_voltage));
@@ -196,10 +210,8 @@ int velocityToPWM (float desiredVelocity) {
 }
 
 
-/*
- * intakes commanded velocity from balance controller
- * converts commanded velocity into commanded position
- */
+/* intakes commanded velocity from balance controller
+ * converts commanded velocity into commanded position */
 int eulerIntegrate(float desiredVelocity, float current_pos){
   float desiredPosition = current_pos + desiredVelocity*averageTimeStep ;
   return desiredPosition;
@@ -215,51 +227,18 @@ float updateEncoderPosition(){
   return current_pos;
 }
 
-/*
- * takes in desired position and applies a PID controller to minimize error between current position and desired position
- */
+/* takes in desired position and applies a PID controller to minimize error between current position and desired position */
 void frontWheelControl(float desiredVelocity, float current_pos){
   float desired_pos = eulerIntegrate(desiredVelocity, current_pos);
   
-  //P term
-  //calculate position err desired_posor (rad)
-  pos_error = desired_pos - current_pos ;
-
-  //position scaling factor should be a maximum of K_p = 100/(M_PI/2) found by taking 100 (100 being max pwm value I want to reach), and dividing 
-  //by theoretical max absolute value of angle (Pi/2). This means with angles in that range, 100 will be the max PWM value 
-  //outputted to the motor
-  sp_error =  (K_p*pos_error);
-  unsigned long currentMicros = micros();
-
-  //obtain a running average for the value of the time step to use in the Euler integration. This time step 
-  //is not constant, but a running average will work as an approximation to calculate desired position from desired velocity
-  numTimeSteps++;
-  averageTimeStep = ((averageTimeStep*(numTimeSteps-1)) + (currentMicros - previousMicros))/numTimeSteps ;
-  e
-  //D term
-  //calculates velocity error with (desired velocity - current velocity), desired velocity will always be zero
-  //
-  current_vel = (((((relativePos-x_offset)-oldPosition)*0.02197*1000000*M_PI/180.0)/(currentMicros-previousMicros)));   //Angular Speed(rad/s)
-  previousMicros = currentMicros;
-
-  sv_error =  (-K_d*current_vel);
-  Serial.print("Vel error:");   Serial.println(sv_error);  
+  unsigned long current_t = micros();
+  PID_Controller(desired_pos, relativePos, x_offset, current_t, previous_t, oldPosition);
   
-  PID_output =  sp_error + sv_error + velocityToPWM(desiredVelocity);
-
-  if (PID_output > 0) {
-    digitalWrite(DIR, LOW); 
-  } else {
-    digitalWrite(DIR, HIGH);
-  }
-  analogWrite(PWM_front, abs((int)(PID_output)));
-
+  previous_t = current_t;
   oldPosition = relativePos-x_offset;
 }
 
-/*
- * TODO: FUNCTION THAT RETURNS DESIRED ANGULAR VELOCITY OF FRONT WHEEL
- */
+/* FUNCTION THAT RETURNS DESIRED ANGULAR VELOCITY OF FRONT WHEEL */
 float balanceController(float roll_angle, float roll_rate, float encoder_angle){
   float desiredSteerRate = (k1*roll_angle) + (k2*roll_rate) + (k3*encoder_angle);
   return desiredSteerRate;
@@ -272,7 +251,7 @@ struct roll_t{
 
 // Retrieve data from IMU about roll angle and rate and return it
 struct roll_t updateIMUData(){
-  roll_t roll_d;
+  roll_t roll_data;
   //get data from IMU
   float roll_angle = getIMU(0x01);   //get roll angle
   Serial.print("\nRoll Angle: ");
@@ -281,93 +260,14 @@ struct roll_t updateIMUData(){
   Serial.print("\t\tRoll Rate: ");
   Serial.print(roll_rate,4);
   Serial.print("\n--------------------------------------------------");  
-  roll_d.angle = roll_angle;
-  roll_d.rate = roll_rate;
-  return roll_d;
+  roll_data.angle = roll_angle;
+  roll_data.rate = roll_rate;
+  return roll_data;
 }
 
 void loop() {
-//  float encoder_position = updateEncoderPosition();
+  float encoder_position = updateEncoderPosition();
   roll_t imu_data = updateIMUData();
-//  float desiredVelocity = balanceController(imu_data.angle, imu_data.rate, encoder_position);//NEED TO UPDATE ROLL ANGLE AND RATE
-//  frontWheelControl(desiredVelocity, encoder_position);  //DESIRED VELOCITY FROM BALANCE CONTROLLER - NEED TO UPDATE
-}
-
-//Interrupt Service Routines
-void ISR_CH1() {
-  noInterrupts();
-  CH1 = digitalRead(RC_CH1);
-  if (CH1 == HIGH) {
-    start_CH1 = micros();
-  }
-  else {
-    end_CH1 = micros();
-    duration_CH1 = end_CH1 - start_CH1;
-  }
-  interrupts();
-}
-
-void ISR_CH2() {
-  noInterrupts();
-  CH2 = digitalRead(RC_CH2);
-  if (CH2 == HIGH) {
-    start_CH2 = micros();
-  }
-  else {
-    end_CH2 = micros();
-    duration_CH2 = end_CH2 - start_CH2;
-  }
-  interrupts();
-}
-
-void ISR_CH3() {
-  noInterrupts();
-  CH3 = digitalRead(RC_CH3);
-  if (CH3 == HIGH) {
-    start_CH3 = micros();
-  }
-  else {
-    end_CH3 = micros();
-    duration_CH3 = end_CH3 - start_CH3;
-  }
-  interrupts();
-}
-
-void ISR_CH4() {
-  noInterrupts();
-  CH4 = digitalRead(RC_CH4);
-  if (CH4 == HIGH) {
-    start_CH4 = micros();
-  }
-  else {
-    end_CH4 = micros();
-    duration_CH4 = end_CH4 - start_CH4;
-  }
-  interrupts();
-}
-
-void ISR_CH5() {
-  noInterrupts();
-  CH5 = digitalRead(RC_CH5);
-  if (CH5 == HIGH) {
-    start_CH5 = micros();
-  }
-  else {
-    end_CH5 = micros();
-    duration_CH5 = end_CH5 - start_CH5;
-  }
-  interrupts();
-}
-
-void ISR_CH6() {
-  noInterrupts();
-  CH6 = digitalRead(RC_CH6);
-  if (CH6 == HIGH) {
-    start_CH6 = micros();
-  }
-  else {
-    end_CH6 = micros();
-    duration_CH6 = end_CH6 - start_CH6;
-  }
-  interrupts();
+  float desiredVelocity = balanceController(imu_data.angle, imu_data.rate, encoder_position);//NEED TO UPDATE ROLL ANGLE AND RATE
+  frontWheelControl(desiredVelocity, encoder_position);  //DESIRED VELOCITY FROM BALANCE CONTROLLER - NEED TO UPDATE
 }

@@ -129,25 +129,6 @@ void setup() {
 //set x offset to define where the front tick is with respect to the absolute position of the encoder A and B channels
    x_offset = REG_TC0_CV0;
 
-int i;
-int j;
-
-//for (i = 0; i < 220; i = i+20) {
-//  for (j = 0; j<20; j++) {
-//  StepValues[i+j] = -M_PI/2 + (i/20)*M_PI/10;
-//  }
-//  
-//}
-
-
-
-for (i = 0; i < 55; i = i+5) {
-  for (j = 0; j<5; j++) {
-  StepValues[i+j] = -M_PI/2 + (i/5)*M_PI/10;
-  }
-  
-}
-
 }  
 
 //create a varaible to convert error to pwm output value
