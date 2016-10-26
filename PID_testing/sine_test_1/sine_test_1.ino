@@ -31,6 +31,7 @@ float sp_error = 0;
 float sv_error = 0;
 float t = 0;
 float delta_t = 0;
+int numTimeSteps = 0;
 
 float StepValues[1100];
 int k = 0;
@@ -151,7 +152,26 @@ void loop() {
 
  
 //Serial.print("t:");   Serial.println(t);
-desired_pos = 1*sin(0.0001*(t));
+//desired_pos = 1*sin(0.0001*(t));
+
+desired_vel = .0001*cos(.0001*t) ;
+
+
+desired_pos = eulerIntegrate(desiredVelocity, current_pos);
+
+
+
+  //obtain a running average for the value of the time step to use in the Euler integration. This time step 
+  //is not constant, but a running average will work as an approximation to calculate desired position from desired velocity
+  numTimeSteps++;
+  averageTimeStep = ((averageTimeStep*(numTimeSteps-1)) + (currentMicros - previousMicros))/numTimeSteps ;
+
+
+
+
+
+
+
 //desired_pos = .3*sin(0.00002*(t)); //sine function oscillating between -.75 and .75 such that the overall position does not exceed -45 to 45 degrees
  
 //
@@ -246,13 +266,7 @@ delta_t = (currentMicros-previousMicros) ;
 //    int resistance_velocity = (int) .7*current_vel;
 //    analogWrite(PWM_front, resistance_velocity);
 ////  
-
-
-
-
-
-
-  
+ 
   previousMicros = currentMicros;
   
 
@@ -294,18 +308,16 @@ Serial.println(String(current_pos) + "\t" + String(desired_pos) + "\t" + String(
 //      analogWrite(PWM_front, 100);
 //   }
 //  
-
-  
-
-
-
-
-
-  
-
 oldPosition = x-x_offset;
 
 }
+
+int eulerIntegrate(float desiredVelocity, float current_pos){
+  float desiredPosition = current_pos + desiredVelocity*averageTimeStep ;
+  return desiredPosition;
+}
+
+
   //oldIndex = y;
   //delay(1000);
   

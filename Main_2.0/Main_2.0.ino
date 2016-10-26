@@ -231,8 +231,34 @@ float updateEncoderPosition(){
 void frontWheelControl(float desiredVelocity, float current_pos){
   float desired_pos = eulerIntegrate(desiredVelocity, current_pos);
   
+<<<<<<< HEAD
+  //P term
+  //calculate position err desired_posor (rad)
+  pos_error = desired_pos - current_pos ;
+
+  //position scaling factor should be a maximum of K_p = 100/(M_PI/2) found by taking 100 (100 being max pwm value I want to reach), and dividing 
+  //by theoretical max absolute value of angle (Pi/2). This means with angles in that range, 100 will be the max PWM value 
+  //outputted to the motor
+  sp_error =  (K_p*pos_error);
+  unsigned long currentMicros = micros();
+
+  //obtain a running average for the value of the time step to use in the Euler integration. This time step 
+  //is not constant, but a running average will work as an approximation to calculate desired position from desired velocity
+  numTimeSteps++;
+  averageTimeStep = ((averageTimeStep*(numTimeSteps-1)) + (currentMicros - previousMicros))/numTimeSteps ;
+  
+  //D term
+  //calculates velocity error with (desired velocity - current velocity), desired velocity will always be zero
+  //
+  current_vel = (((((relativePos-x_offset)-oldPosition)*0.02197*1000000*M_PI/180.0)/(currentMicros-previousMicros)));   //Angular Speed(rad/s)
+  previousMicros = currentMicros;
+
+  sv_error =  (-K_d*current_vel);
+  Serial.print("Vel error:");   Serial.println(sv_error);  
+=======
   unsigned long current_t = micros();
   PID_Controller(desired_pos, relativePos, x_offset, current_t, previous_t, oldPosition);
+>>>>>>> origin/master
   
   previous_t = current_t;
   oldPosition = relativePos-x_offset;
