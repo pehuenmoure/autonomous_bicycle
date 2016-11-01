@@ -1,6 +1,5 @@
 #define in_pin 11 //hall sensor pulse
-#define Sample_length 10 //what is this? 
-#define pwm_rear 9
+#define pwm_rear 8 //rear motor PWM pin 
 
 float freq =0;
 float T=0;
@@ -10,20 +9,18 @@ void setup() {
 Serial.begin(9600);
 pinMode(in_pin, INPUT);
 pinMode(pwm_rear, OUTPUT);
-//analogWrite(pwm_rear, 170);
-attachInterrupt(digitalPinToInterrupt(in_pin), changeState, CHANGE);
+analogWrite(pwm_rear, 180); //set PWM
+attachInterrupt(digitalPinToInterrupt(in_pin), changeState, CHANGE); //Interrupt
 }
 
 void loop() {
-T=pulseInLong(in_pin, HIGH);
+T=pulseInLong(in_pin, HIGH)+pulseInLong(in_pin, LOW);
 digitalWrite(in_pin, state);
 Serial.print(state);
 Serial.print(' ');
-
-
 Serial.print(T);
 Serial.print(' ');
-freq=10e6/(T*56);
+freq=(1e6)/(T*28);
 Serial.print(freq);
 Serial.print('\n');
 }
