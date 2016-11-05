@@ -50,11 +50,7 @@ int numTimeSteps = 0;
 float averageTimeStep = 0;
 
 float desired_steer = 0;
-
-//front motor PID contants
-//float K_p = 60;
-//float K_d = 2.5;
-//float K_i = 0;
+float desired_pos_array[250];
 
 //Watchdog
 #define WDI 42
@@ -100,7 +96,7 @@ signed int relativePos = REG_TC0_CV0;
 signed int indexValue = REG_TC0_CV1;
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   initIMU();
 
   //setup Encoder
@@ -159,15 +155,12 @@ void setup() {
   pinMode(RC_CH5, INPUT);
   pinMode(RC_CH6, INPUT);
 
-  analogWrite(PWM_rear, 250);
-  digitalWrite(DIR, HIGH); 
-  analogWrite(PWM_front,250);
-  
+  analogWrite(PWM_rear, 100);
   //request desired angle value, do not proceed until an angle value has been provided
   int  message_delivered = 0;
    while (!(Serial.available())) {
     if (message_delivered == 0) {
-      Serial.println("press any key to calibrate front wheel") ;
+      Serial.println("Calibrate the front wheel") ;
       message_delivered = 1;
     }
    }
@@ -180,7 +173,8 @@ void setup() {
   while(y==oldIndex){
     analogWrite(PWM_front,20);
     y = REG_TC0_CV1;
-  }  
+  }
+  Serial.println("Tick");
   
   delay(500) ;
   oldIndex = y;
@@ -196,7 +190,20 @@ void setup() {
 
   //set x offset to define where the front tick is with respect to the absolute position of the encoder A and B channels
    x_offset = REG_TC0_CV0;
-
+//  for (int i = 0; i< 250; i++){
+//    if (i< 50){
+//      desired_pos_array[i] = -(M_PI/2);
+//    }else if (i<100){
+//      desired_pos_array[i] = -(M_PI/4);
+//    }else if (i<150){
+//      desired_pos_array[i] = 0;
+//    }else if (i<200){
+//      desired_pos_array[i] = M_PI/4;
+//    }else{
+//      desired_pos_array[i] = M_PI/2;
+//    }
+//    
+//  }
 }
 
 /* takes in desired angular velocity returns pwm */
@@ -237,10 +244,13 @@ float updateEncoderPosition(){
 
 /* takes in desired position and applies a PID controller to minimize error between current position and desired position */
 void frontWheelControl(float desiredVelocity, float current_pos){
-//  float desired_pos = eulerIntegrate(desiredVelocity, current_pos);
-  desired_pos = 0;
+  //float desired_pos = eulerIntegrate(desiredVelocity, current_pos);
+  if (Serial.available()){
+    desired_pos = M_PI / 180 * Serial.parseFloat();
+  }
   
   unsigned long current_t = micros();
+  
   PID_Controller(desired_pos, relativePos, x_offset, current_t, previous_t, oldPosition);
   
   previous_t = current_t;
@@ -275,26 +285,18 @@ struct roll_t updateIMUData(){
 }
 
 //Loop variables
-int l_count = 0;
-int num_loops = 10;
 void loop() {
-  if (l_count < num_loops){
     l_start = micros();
     
     float encoder_position = updateEncoderPosition();
-    roll_t imu_data = updateIMUData();
-    float desiredVelocity = balanceController(imu_data.angle, imu_data.rate, encoder_position);//NEED TO UPDATE ROLL ANGLE AND RATE
+//    roll_t imu_data = updateIMUData();
+//    float desiredVelocity = balanceController(imu_data.angle, imu_data.rate, encoder_position);//NEED TO UPDATE ROLL ANGLE AND RATE
+    float desiredVelocity = 0;
     frontWheelControl(desiredVelocity, encoder_position);  //DESIRED VELOCITY FROM BALANCE CONTROLLER - NEED TO UPDATE
     
-    l_count += 1;
-    l_diff = l_start - micros();
+    l_diff = micros()- l_start;
+//    Serial.println(l_diff);
     if (l_diff < interval){
-      delayMicroseconds(interval - l_diff) ;
-      delay(interval - l_diff);   //default units of delay is milliseconds not mircoseconds
+      delayMicroseconds(interval - l_diff);
     }
-  }else{
-    //Print values here
-    Serial.println(l_diff);
-    l_count = 0;
-  }
 }
