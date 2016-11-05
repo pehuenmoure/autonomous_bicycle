@@ -100,7 +100,7 @@ signed int relativePos = REG_TC0_CV0;
 signed int indexValue = REG_TC0_CV1;
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   initIMU();
 
   //setup Encoder
@@ -164,7 +164,7 @@ void setup() {
   int  message_delivered = 0;
    while (!(Serial.available())) {
     if (message_delivered == 0) {
-      Serial.println("press any key to calibrate front wheel") ;
+      Serial.println("Calibrate the front wheel") ;
       message_delivered = 1;
     }
    }
@@ -274,7 +274,7 @@ struct roll_t updateIMUData(){
 int l_count = 0;
 int num_loops = 10;
 void loop() {
-  if (l_count < num_loops){
+//  if (l_count < num_loops){
     l_start = micros();
     
     float encoder_position = updateEncoderPosition();
@@ -285,11 +285,11 @@ void loop() {
     l_count += 1;
     l_diff = l_start - micros();
     if (l_diff < interval){
-      delay(interval - l_diff);
+      delayMicroseconds(interval - l_diff);
     }
-  }else{
-    //Pring values here
-    Serial.println(l_diff);
-    l_count = 0;
-  }
+//  }else{
+//    //Pring values here
+//    Serial.println(l_diff);
+//    l_count = 0;
+//  }
 }
