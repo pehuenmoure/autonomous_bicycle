@@ -100,7 +100,7 @@ signed int relativePos = REG_TC0_CV0;
 signed int indexValue = REG_TC0_CV1;
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(9600);
   initIMU();
 
   //setup Encoder
@@ -159,12 +159,15 @@ void setup() {
   pinMode(RC_CH5, INPUT);
   pinMode(RC_CH6, INPUT);
 
-  analogWrite(PWM_rear, 100);
+  analogWrite(PWM_rear, 250);
+  digitalWrite(DIR, HIGH); 
+  analogWrite(PWM_front,250);
+  
   //request desired angle value, do not proceed until an angle value has been provided
   int  message_delivered = 0;
    while (!(Serial.available())) {
     if (message_delivered == 0) {
-      Serial.println("Calibrate the front wheel") ;
+      Serial.println("press any key to calibrate front wheel") ;
       message_delivered = 1;
     }
    }
@@ -234,7 +237,8 @@ float updateEncoderPosition(){
 
 /* takes in desired position and applies a PID controller to minimize error between current position and desired position */
 void frontWheelControl(float desiredVelocity, float current_pos){
-  float desired_pos = eulerIntegrate(desiredVelocity, current_pos);
+//  float desired_pos = eulerIntegrate(desiredVelocity, current_pos);
+  desired_pos = 0;
   
   unsigned long current_t = micros();
   PID_Controller(desired_pos, relativePos, x_offset, current_t, previous_t, oldPosition);
@@ -271,27 +275,26 @@ struct roll_t updateIMUData(){
 }
 
 //Loop variables
-//int l_count = 0;
+int l_count = 0;
 int num_loops = 10;
 void loop() {
-//  if (l_count < num_loops){
+  if (l_count < num_loops){
     l_start = micros();
     
     float encoder_position = updateEncoderPosition();
-//    roll_t imu_data = updateIMUData();
-//    float desiredVelocity = balanceController(imu_data.angle, imu_data.rate, encoder_position);//NEED TO UPDATE ROLL ANGLE AND RATE
-    
+    roll_t imu_data = updateIMUData();
+    float desiredVelocity = balanceController(imu_data.angle, imu_data.rate, encoder_position);//NEED TO UPDATE ROLL ANGLE AND RATE
     frontWheelControl(desiredVelocity, encoder_position);  //DESIRED VELOCITY FROM BALANCE CONTROLLER - NEED TO UPDATE
     
-//    l_count += 1;
+    l_count += 1;
     l_diff = l_start - micros();
     if (l_diff < interval){
-      delayMicroseconds(interval - l_diff);
+      delayMicroseconds(interval - l_diff) ;
+      delay(interval - l_diff);   //default units of delay is milliseconds not mircoseconds
     }
-    Serial.println(micros() - l_start);
-//  }else{
-//    //Pring values here
-//    Serial.println(l_diff);
-//    l_count = 0;
-//  }
+  }else{
+    //Print values here
+    Serial.println(l_diff);
+    l_count = 0;
+  }
 }
