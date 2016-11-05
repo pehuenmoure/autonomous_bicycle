@@ -277,10 +277,11 @@ void loop() {
 //  if (l_count < num_loops){
     l_start = micros();
     
-//    float encoder_position = updateEncoderPosition();
+    float encoder_position = updateEncoderPosition();
 //    roll_t imu_data = updateIMUData();
 //    float desiredVelocity = balanceController(imu_data.angle, imu_data.rate, encoder_position);//NEED TO UPDATE ROLL ANGLE AND RATE
-//    frontWheelControl(desiredVelocity, encoder_position);  //DESIRED VELOCITY FROM BALANCE CONTROLLER - NEED TO UPDATE
+    
+    frontWheelControl(desiredVelocity, encoder_position);  //DESIRED VELOCITY FROM BALANCE CONTROLLER - NEED TO UPDATE
     
 //    l_count += 1;
     l_diff = l_start - micros();
