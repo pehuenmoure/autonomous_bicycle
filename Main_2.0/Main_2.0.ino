@@ -271,7 +271,7 @@ struct roll_t updateIMUData(){
 }
 
 //Loop variables
-int l_count = 0;
+//int l_count = 0;
 int num_loops = 10;
 void loop() {
 //  if (l_count < num_loops){
@@ -282,7 +282,7 @@ void loop() {
     float desiredVelocity = balanceController(imu_data.angle, imu_data.rate, encoder_position);//NEED TO UPDATE ROLL ANGLE AND RATE
     frontWheelControl(desiredVelocity, encoder_position);  //DESIRED VELOCITY FROM BALANCE CONTROLLER - NEED TO UPDATE
     
-    l_count += 1;
+//    l_count += 1;
     l_diff = l_start - micros();
     if (l_diff < interval){
       delayMicroseconds(interval - l_diff);
