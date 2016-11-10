@@ -1,30 +1,37 @@
-#define in_pin 11 //hall sensor pulse
-#define pwm_rear 8 //rear motor PWM pin 
-
-float freq =0;
+#define in_pin 11 //hall sensor pulse 
+#define pwm_rear 8 //rear motor PWM pin
+#define v_pin 63
+float pwm = 165;
+float tOld= 0;
+float tNew= 0; 
 float T=0;
-int state=0;
+float w= 0; 
+int sampleLength = 100;
+int count = 0; 
+
 void setup() {
-  // put your setup code here, to run once:
-Serial.begin(9600);
-pinMode(in_pin, INPUT);
-pinMode(pwm_rear, OUTPUT);
-analogWrite(pwm_rear, 180); //set PWM
-attachInterrupt(digitalPinToInterrupt(in_pin), changeState, CHANGE); //Interrupt
+  Serial.begin(9600);
+  pinMode(in_pin, INPUT);
+  pinMode(pwm_rear, OUTPUT);
+  analogWrite(pwm_rear, pwm);
+  attachInterrupt(digitalPinToInterrupt(in_pin), getT, RISING); //Interrupt
 }
 
 void loop() {
-T=pulseInLong(in_pin, HIGH)+pulseInLong(in_pin, LOW);
-digitalWrite(in_pin, state);
-Serial.print(state);
-Serial.print(' ');
-Serial.print(T);
-Serial.print(' ');
-freq=(1e6)/(T*28);
-Serial.print(freq);
-Serial.print('\n');
-}
+  T= tNew - tOld;
+  w= 1/(28*T)*1E6;
+  Serial.println(w);
+  }
 
-void changeState() {
-  state = !state;
+
+void getT() {
+  if (count != sampleLength){
+    count++;
+  }
+  else{
+   count = 0; 
+    tOld = tNew;
+    tNew = micros();
+  }
+ 
 }
