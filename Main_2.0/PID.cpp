@@ -39,7 +39,7 @@ void PID_Controller(float desired_pos, signed int x, signed int x_offset,
   }
 
   //clip the maximum output to the motor by essentially saying "if the value is greater than this threshold, make the output to the motor this exact threshold value"
-  Serial.println(String(current_pos) + "\t" + String(desired_pos) + "\t" + String(pos_error) + "\t" + String(total_error));
+//  Serial.println(String(current_pos) + "\t" + String(desired_pos) + "\t" + String(pos_error) + "\t" + String(total_error));
 
   oldPosition = x-x_offset;
    if (total_error > 100 || total_error < -100) {

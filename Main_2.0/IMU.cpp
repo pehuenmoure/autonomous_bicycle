@@ -79,7 +79,7 @@ float getIMU(byte commandToWrite){
   while (result != 0x01 && (idle == 1 || counter < 11)) {  // Repeat until device is Ready 
     delay(10);
     result = transferByte(0xFF);
-    Serial.print("Status of device. Result: "),Serial.println(result);
+//    Serial.print("Status of device. Result: "),Serial.println(result);
     if (result == 0){
       idle = 0;
       counter ++;

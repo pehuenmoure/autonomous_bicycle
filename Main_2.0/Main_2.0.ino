@@ -48,9 +48,11 @@ int pwm = 0;
 //count the number of times the time step has been calculated to calculate a running average time step
 int numTimeSteps = 0;
 float averageTimeStep = 0;
+int n = 0;
 
 float desired_steer = 0;
 float desired_pos_array[250];
+float theo_position = 0;
 
 //Watchdog
 #define WDI 42
@@ -94,6 +96,9 @@ int maxfront_PWM = 110;
 signed int relativePos = REG_TC0_CV0;
 //Read the index value (Z channel) of the encoder
 signed int indexValue = REG_TC0_CV1;
+
+
+
 
 void setup() {
   Serial.begin(115200);
@@ -155,8 +160,16 @@ void setup() {
   pinMode(RC_CH5, INPUT);
   pinMode(RC_CH6, INPUT);
 
-  analogWrite(PWM_rear, 100);
-  //request desired angle value, do not proceed until an angle value has been provided
+  
+  landingGearDown() ;
+  
+  analogWrite(PWM_rear, 250);
+
+  // initializes pins for the landing gear relay switch
+  pinMode(48,OUTPUT);
+  pinMode(47,OUTPUT);
+
+// tell user to press any key to calibrate wheel
   int  message_delivered = 0;
    while (!(Serial.available())) {
     if (message_delivered == 0) {
@@ -164,9 +177,9 @@ void setup() {
       message_delivered = 1;
     }
    }
-
-  //the follwing loop will not terminate until wheel passes front tick on encoder twice. The second time should be passed very slowly- 
-  //this will allow for the most accurate location to be found for the center alignment of the front wheel with the bike.
+//
+//  the follwing loop will not terminate until wheel passes front tick on encoder twice. The second time should be passed very slowly- 
+//  this will allow for the most accurate location to be found for the center alignment of the front wheel with the bike.
   signed int y = REG_TC0_CV1; 
   oldIndex = y;
   digitalWrite(DIR, HIGH); 
@@ -184,12 +197,14 @@ void setup() {
     analogWrite(PWM_front,20);
     y = REG_TC0_CV1;
   }  
-  
+    
+  Serial.println("TOCK");
   //redefine oldIndex to now be current y value
    oldIndex = y;
 
   //set x offset to define where the front tick is with respect to the absolute position of the encoder A and B channels
    x_offset = REG_TC0_CV0;
+   
 //  for (int i = 0; i< 250; i++){
 //    if (i< 50){
 //      desired_pos_array[i] = -(M_PI/2);
@@ -204,6 +219,17 @@ void setup() {
 //    }
 //    
 //  }
+}
+
+
+//landing gear functions
+void landingGearDown(){
+  digitalWrite(48,LOW); //sets relay pin 1 to High (turns light on)
+  digitalWrite(47,LOW); //sets relay pin 2 to High  (turns light on)
+}
+void landingGearUp(){
+  digitalWrite(48,HIGH); //Sets relay pin 1 to low (turns light off)
+  digitalWrite(47,HIGH); //Sets relay pin 2 to low (turns light off)
 }
 
 /* takes in desired angular velocity returns pwm */
@@ -227,10 +253,11 @@ int velocityToPWM (float desiredVelocity) {
 
 /* intakes commanded velocity from balance controller
  * converts commanded velocity into commanded position */
-int eulerIntegrate(float desiredVelocity, float current_pos){
-  float desiredPosition = current_pos + desiredVelocity*averageTimeStep ;
+float eulerIntegrate(float desiredVelocity, float current_pos){
+  float desiredPosition = current_pos + desiredVelocity * ((float)interval/1000000.0) ;
   return desiredPosition;
 }
+
 
 // updates global variables representing encoder position
 float updateEncoderPosition(){
@@ -244,12 +271,21 @@ float updateEncoderPosition(){
 
 /* takes in desired position and applies a PID controller to minimize error between current position and desired position */
 void frontWheelControl(float desiredVelocity, float current_pos){
-  //float desired_pos = eulerIntegrate(desiredVelocity, current_pos);
-  if (Serial.available()){
-    desired_pos = M_PI / 180 * Serial.parseFloat();
-  }
   
   unsigned long current_t = micros();
+  
+  if (n == 0) {
+    float desired_pos = 0;
+    PID_Controller(desired_pos, relativePos, x_offset, current_t, previous_t, oldPosition);
+    n++;
+  }
+  float desired_pos = eulerIntegrate(desiredVelocity, current_pos);
+//  Serial.println(String(theo_position) + '\t' + String(desired_pos) + '\t' + String(current_pos)) ;
+  
+//  if (Serial.available()){
+//    desired_pos = M_PI / 180 * Serial.parseFloat();
+//  }
+  
   
   PID_Controller(desired_pos, relativePos, x_offset, current_t, previous_t, oldPosition);
   
@@ -277,26 +313,28 @@ struct roll_t updateIMUData(){
 //  Serial.print(roll_angle,4);
   float roll_rate = getIMU(0x26);    //get roll rate
 //  Serial.print("\t\tRoll Rate: ");
-//  Serial.print(roll_rate,4);
-//  Serial.print("\n--------------------------------------------------\n");  
+//  Serial.println(roll_rate,4);
   roll_data.angle = roll_angle;
   roll_data.rate = roll_rate;
   return roll_data;
 }
-
 //Loop variables
 void loop() {
     l_start = micros();
     
-    float encoder_position = updateEncoderPosition();
-//    roll_t imu_data = updateIMUData();
-//    float desiredVelocity = balanceController(imu_data.angle, imu_data.rate, encoder_position);//NEED TO UPDATE ROLL ANGLE AND RATE
-    float desiredVelocity = 0;
-    frontWheelControl(desiredVelocity, encoder_position);  //DESIRED VELOCITY FROM BALANCE CONTROLLER - NEED TO UPDATE
-    
+    float encoder_position = updateEncoderPosition(); //output is current position wrt front zero
+    roll_t imu_data = updateIMUData();
+    //Serial.println(String(imu_data.angle) + '\t' + String(encoder_position)) ;
+    float desiredVelocity = balanceController(((-1)*(imu_data.angle +.24)),(-1)*imu_data.rate, encoder_position);//NEED TO UPDATE ROLL ANGLE AND RATE SET TO NEGATIVE TO MATCH SIGN CONVENTION BETWEEN BALANCE CONTROLLER AND 
+    frontWheelControl(desiredVelocity, encoder_position);  //DESIRED VELOCITY SET TO NEGATIVE TO MATCH SIGN CONVENTION BETWEEN BALANCE CONTROLLER AND 
+
     l_diff = micros()- l_start;
 //    Serial.println(l_diff);
     if (l_diff < interval){
       delayMicroseconds(interval - l_diff);
     }
-}
+//    }else{
+//      Serial.println("LOOP LENGTH WAS VIOLATED. LOOP TIME WAS: " + String(l_diff));
+//      while(true){}
+    }
+

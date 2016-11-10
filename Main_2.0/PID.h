@@ -8,7 +8,7 @@
 //PID
 #define PWM_front 9
 #define DIR 46
-#define K_p 200
+#define K_p 500
 #define K_d 4
 #define K_i 0
 
