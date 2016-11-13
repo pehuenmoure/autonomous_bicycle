@@ -1,0 +1,22 @@
+void setup() {
+  // put your setup code here, to run once:
+  pinMode(63,OUTPUT);
+}
+
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  Serial.print(PI);
+}
+int getPWM(float desiredVelocity) {//TODO check units for velocity
+  //Estimated radius of rear wheel: 40cm or 0.4m
+  float radius = 0.4;
+  //Maximum voltage of battery pack, in Volts- to be read from PIN 63: 14.2 is conversion factor
+  float voltage = analogRead(63)/14.2;
+  float pi = 3.1415926535897;
+
+
+  //Converted from Equation to calculate velocity on rear wheel: see Rear Motor Weekly Reports
+  int pwm = (int)((desiredVelocity/(2*PI*radius))+2.1965)/0.2224*180/voltage;
+  return pwm;
+}
