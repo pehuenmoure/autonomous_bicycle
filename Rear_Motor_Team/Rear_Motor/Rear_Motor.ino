@@ -30,6 +30,9 @@ void loop() {
     tc = 0;
     pwm++;
     analogWrite(pwm_rear,pwm);
+    Serial.print("Switching to pwm ");
+    Serial.print(pwm);
+    Serial.print('\n');
   }
   }
 
