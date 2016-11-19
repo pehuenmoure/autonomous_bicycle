@@ -51,4 +51,4 @@ void getT() {
    Serial.print(w);
    Serial.print('\n');
   }
-}[
+}
