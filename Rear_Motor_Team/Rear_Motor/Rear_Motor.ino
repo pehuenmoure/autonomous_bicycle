@@ -1,7 +1,7 @@
 #define in_pin 11 //hall sensor pulse 
 #define pwm_rear 8 //rear motor PWM pin
 #define v_pin 63
-float pwm = 95;
+float pwm = 90;
 float tOld= 0;
 float tNew= 0; 
 float T=0;
@@ -34,7 +34,7 @@ void setup() {
 }
 
 void loop() {
-  if(tc == ds && pwm<180){
+   if(tc == ds && pwm<180){
     tc = 0;
     
     float voltage = analogRead(63)/14.2*pwm/180;
@@ -42,7 +42,7 @@ void loop() {
     Serial.print(voltage);
     Serial.print("\n");
     
-    pwm++;
+    pwm+= 10;
     analogWrite(pwm_rear, pwm);
     Serial.print("Current PWM: ");
     Serial.print(pwm);
@@ -51,12 +51,13 @@ void loop() {
   }
 
 
-void getT() {
+void getT(){
    //Getting Average
   if (count != sampleLength){
     count++;
     }
   else{ // Count == sampleLength
+    tc++;
    count = 0; 
    tOld = tNew;
    tNew = micros();
