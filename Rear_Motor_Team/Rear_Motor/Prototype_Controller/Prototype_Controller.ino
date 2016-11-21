@@ -1,12 +1,12 @@
  #define in_pin 11 //hall sensor pulse 
 #define pwm_rear 8 //rear motor PWM pin
 #define v_pin 63
-float pwm = 180;
+float pwm = 90;
 float tOld = 0;
 float tNew = 0;
 float T = 0;
 float w = 0; //Measured Angular velocity in RPS
-float desW = 1.0; //Desired Angular Velocity in RPS
+float desW = 2.5; //Desired Angular Velocity in RPS
 int sampleLength = 25;
 int count = 0;
 int x = 30; // Used in ramp up
