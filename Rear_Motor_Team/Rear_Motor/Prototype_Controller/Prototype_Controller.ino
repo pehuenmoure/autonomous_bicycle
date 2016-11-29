@@ -44,7 +44,9 @@ void setup() {
 }
 
 void loop() {
-  pwm = (int)(gain * (desW - w) + pwm);
+  
+  pwm = (int)(gain * (desW - w) + pwm); //Actual Controller
+  
   Serial.print(w);
   Serial.print(" vs. Desired: ");
   Serial.print(desW);
@@ -69,6 +71,7 @@ void getT() {
   }
 }
 
+//Gets PWM for a desired Velocity assuming no resistance
 int getPWM(float desiredVelocity) {//velocity in RPS
   //Maximum voltage of battery pack, in Volts- to be read from PIN 63: 14.2 is conversion factor
   float voltage = analogRead(63) / 14.2;
@@ -77,6 +80,8 @@ int getPWM(float desiredVelocity) {//velocity in RPS
   return pwm;
 }
 
+//For Arundathi
 void setW(float desired) {
   desW = desired;
 }
+

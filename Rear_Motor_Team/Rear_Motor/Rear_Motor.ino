@@ -23,7 +23,7 @@ void setup() {
   while (x <pwm){ //Ramps up speed- Workaround for rear motor safety features
     analogWrite(pwm_rear, x);  
     delay(100);
-    x=x+1;
+    x=x+10;
   }
   float voltage = analogRead(63)/14.2*pwm/180;
   Serial.print("Effective Voltage: ");
