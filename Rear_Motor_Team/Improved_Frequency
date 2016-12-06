@@ -1,89 +1,60 @@
 #define in_pin 11 //hall sensor pulse 
 #define pwm_rear 8 //rear motor PWM pin
-#define v_pin 63
-float pwm = 80;
-float tOld= 0;
-float tNew= 0; 
-double T=0;
-double w= 0; 
+#define v_pin 63 //voltage reading
+float pwm = 69; //starting pwm
+float tOld = 0; //first time reading
+float tNew = 0; //second time reading
+double T = 0;
+double w = 0;
 int sampleLength = 1;
-int count = 0; 
-int x=30;
-int minT = 0;
-float vals[28];
+int count = 0;
+int x = 30; //ramp up starting pwm
 int tc = 0; //Counts number of data points collected on this PWM
-int ds = 20; //Number of data points to collect for each PWM
+int ds = 10; //Number of data points to collect for each PWM
+
+boolean isInterrupt = false;
 
 
-int i=0;
-float avgsum=0;
-int avg=0;
+int i = 0;
+float avgsum = 0;
+int avg = 0;
 
 void setup() {
-  
+
   Serial.begin(9600);
   pinMode(in_pin, INPUT);
   pinMode(pwm_rear, OUTPUT);
-  
-  while (x <pwm){ //Ramps up speed- Workaround for rear motor safety features
-    analogWrite(pwm_rear, x);  
+
+  while (x < pwm) { //Ramps up speed- Workaround for rear motor safety features
+    analogWrite(pwm_rear, x);
     delay(100);
-    x=x+10;
+    x = x + 10;
   }
-  float voltage = analogRead(63)/14.2*pwm/180;
-  //Serial.print("Effective Voltage: ");
- // Serial.print(voltage);
-  //Serial.print("\n");
+  float voltage = analogRead(63) / 14.2 * pwm / 180;
   analogWrite(pwm_rear, pwm);
   attachInterrupt(digitalPinToInterrupt(in_pin), getT, RISING); //Interrupt
 }
 
 void loop() {
-   if(tc == ds && pwm<180){
+  if (tc >= ds && pwm < 180) {
     tc = 0;
-    
-    float voltage = analogRead(63)/14.2*pwm/180;
-    //Serial.print("Effective Voltage: ");
-   // Serial.print(voltage);
-   // Serial.print("\n");
-    
-    pwm+= 10;
+    float voltage = analogRead(63) / 14.2 * pwm / 180;
+    pwm += 1;
+    // delay(100);
+    Serial.println("Increasing pwm!");
+    Serial.println(pwm);
     analogWrite(pwm_rear, pwm);
-    //Serial.print("Current PWM: ");
-  //  Serial.print(pwm);
-   // Serial.print("\n");
   }
-  }
+}
 
 
-void getT(){
-   //Getting Average
-   
-  //if (count != sampleLength){
-    //count++;
-    //}
-  //else if( count == sampleLength){ // Count == sampleLength
-   tc++;
-  // count = 0; }
-   
-   tOld = tNew;
-   tNew = micros();
-   T= (tNew - tOld);
-   w= (1E6)/(28*T) ;
-  if (w<100){
-   Serial.print(w,3);
-   Serial.print(" ");
-   Serial.print(pwm);
-   Serial.print('\n');
-  };
-    //vals[count]=w;
-    //for(i=0;i<28; i++){
-     // avgsum=vals[i];
-   // }
-    //avg= avgsum/28;
-    
-    //Serial.print("vals: ");
-    //for(i=0;i<28; i++){Serial.print(vals[i]);}
-    //Serial.print("\n");
- 
+void getT() {
+    tc++;
+    tOld = tNew;
+    tNew = micros();
+    T = (tNew - tOld);
+    w = (1E6) / (28 * T) ;
+    if (w < 100) {
+      Serial.println(w, 3);
+  }
 }
