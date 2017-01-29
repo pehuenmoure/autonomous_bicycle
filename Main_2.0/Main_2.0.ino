@@ -97,7 +97,7 @@ signed int relativePos = REG_TC0_CV0;
 //Read the index value (Z channel) of the encoder
 signed int indexValue = REG_TC0_CV1;
 
-
+float data[4];
 
 
 void setup() {
@@ -309,11 +309,7 @@ struct roll_t updateIMUData(){
   roll_t roll_data;
   //get data from IMU
   float roll_angle = getIMU(0x01);   //get roll angle
-//  Serial.print("\nRoll Angle: ");
-//  Serial.print(roll_angle,4);
   float roll_rate = getIMU(0x26);    //get roll rate
-//  Serial.print("\t\tRoll Rate: ");
-//  Serial.println(roll_rate,4);
   roll_data.angle = roll_angle;
   roll_data.rate = roll_rate;
   return roll_data;
@@ -328,13 +324,17 @@ void loop() {
     float desiredVelocity = balanceController(((-1)*(imu_data.angle +.24)),(-1)*imu_data.rate, encoder_position);//NEED TO UPDATE ROLL ANGLE AND RATE SET TO NEGATIVE TO MATCH SIGN CONVENTION BETWEEN BALANCE CONTROLLER AND 
     frontWheelControl(desiredVelocity, encoder_position);  //DESIRED VELOCITY SET TO NEGATIVE TO MATCH SIGN CONVENTION BETWEEN BALANCE CONTROLLER AND 
 
+    Serial.write(imu_data.angle);
+    Serial.write(imu_data.rate);
+    Serial.write(encoder_position);
+    Serial.write(2.3);
+
     l_diff = micros()- l_start;
 //    Serial.println(l_diff);
     if (l_diff < interval){
       delayMicroseconds(interval - l_diff);
+    }else{
+      Serial.println("LOOP LENGTH WAS VIOLATED. LOOP TIME WAS: " + String(l_diff));
+      while(true){}
     }
-//    }else{
-//      Serial.println("LOOP LENGTH WAS VIOLATED. LOOP TIME WAS: " + String(l_diff));
-//      while(true){}
-    }
-
+}

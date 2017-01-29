@@ -1,4 +1,5 @@
 #include "IMU.h"
+#include "SPI.h"
 
 /*IMU Setup and Functions*/
 /////////////////////////////////////////////////////////////////////////////////////
@@ -80,78 +81,78 @@ void initIMU(void){
 
 /*getIMU*/
 /////////////////////////////////////////////////////////////////////////////////////
+//
+//float getIMU(byte commandToWrite){
+//  for (int ii=0; ii<3; ii++) {
+//    for (int jj=0; jj<4; jj++) {
+//      data[ii].b[jj] =  SPI_RDR; //read and store data directly from spi received data register
+//    }
+//  } 
+//
+//  for( int mm=0; mm<3; mm++) {
+//    endianSwap(data[mm].b);
+//  }
+//
+//  return data[2].fval;
+//     
+//}
 
 float getIMU(byte commandToWrite){
-  for (int ii=0; ii<3; ii++) {
-    for (int jj=0; jj<4; jj++) {
-      data[ii].b[jj] =  SPI_RDR; //read and store data directly from spi received data register
-    }
-  } 
+    SPI.beginTransaction(settings);
+    
+  /*Setup bytes to write*/
+  // Clear the internal data buffer on the IMU
+  byte result = transferByte(0x01);
+      //Serial.print("Cleared internal buffer. Result: "),Serial.println(result);
+      delay(1);
 
-  for( int mm=0; mm<3; mm++) {
-    endianSwap(data[mm].b);
+  // Send start of packet:
+  result = transferByte(0xF6);
+     //  Serial.print("Send start of packet. Result: "),Serial.println(result);
+     delay(1);
+  
+  // Send command (tared euler angles)
+  result = transferByte(commandToWrite);
+     //  Serial.print("Send commmand 0x01. Result: "),Serial.println(result);
+  
+  // Get status of device:
+  result = transferByte(0xFF);
+     //  Serial.print("Status of device. Result: "),Serial.println(result);
+
+  // idle represents whether or not the IMU is in the idle state. if it is then it will
+  // breake the loop after counter reaches a number of cycles in the idle state   
+  byte idle = 1;
+  int counter = 0;
+  while (result != 0x01 && (idle == 1 || counter < 11)) {  // Repeat until device is Ready 
+    delay(10);
+    result = transferByte(0xFF);
+//    Serial.print("Status of device. Result: "),Serial.println(result);
+    if (result == 0){
+      idle = 0;
+      counter ++;
+    }
   }
 
-  return data[2].fval;
-     
+  if (idle == 1){
+    // Get the 12 bytes of return data from the device: 
+    for (int ii=0; ii<3; ii++) {
+      for (int jj=0; jj<4; jj++) {
+        data[ii].b[jj] =  transferByte(0xFF);
+      }
+    }    
+   
+    SPI.endTransaction();
+  
+    //Swap bytes from big endian to little endian
+    for( int mm=0; mm<3; mm++) {
+      endianSwap(data[mm].b);
+    }
+    
+    return data[2].fval;      //returns roll angle or roll rate
+  }else{
+    getIMU(commandToWrite);
+  }
 }
-
-//float getIMU(byte commandToWrite){
-//    SPI.beginTransaction(settings);
-//    
-//  /*Setup bytes to write*/
-//  // Clear the internal data buffer on the IMU
-//  byte result = transferByte(0x01);
-//      //Serial.print("Cleared internal buffer. Result: "),Serial.println(result);
-//      delay(1);
-//
-//  // Send start of packet:
-//  result = transferByte(0xF6);
-//     //  Serial.print("Send start of packet. Result: "),Serial.println(result);
-//     delay(1);
-//  
-//  // Send command (tared euler angles)
-//  result = transferByte(commandToWrite);
-//     //  Serial.print("Send commmand 0x01. Result: "),Serial.println(result);
-//  
-//  // Get status of device:
-//  result = transferByte(0xFF);
-//     //  Serial.print("Status of device. Result: "),Serial.println(result);
-//
-//  // idle represents whether or not the IMU is in the idle state. if it is then it will
-//  // breake the loop after counter reaches a number of cycles in the idle state   
-//  byte idle = 1;
-//  int counter = 0;
-//  while (result != 0x01 && (idle == 1 || counter < 11)) {  // Repeat until device is Ready 
-//    delay(10);
-//    result = transferByte(0xFF);
-////    Serial.print("Status of device. Result: "),Serial.println(result);
-//    if (result == 0){
-//      idle = 0;
-//      counter ++;
-//    }
-//  }
-//
-//  if (idle == 1){
-//    // Get the 12 bytes of return data from the device: 
-//    for (int ii=0; ii<3; ii++) {
-//      for (int jj=0; jj<4; jj++) {
-//        data[ii].b[jj] =  transferByte(0xFF);
-//      }
-//    }    
-//   
-//    SPI.endTransaction();
-//  
-//    //Swap bytes from big endian to little endian
-//    for( int mm=0; mm<3; mm++) {
-//      endianSwap(data[mm].b);
-//    }
-//    
-//    return data[2].fval;      //returns roll angle or roll rate
-//  }else{
-//    getIMU(commandToWrite);
-//  }
-//}
 
 
 
