@@ -1,7 +1,8 @@
 #define in_pin 11 //hall sensor pulse 
 #define pwm_rear 8 //rear motor PWM pin
+#define reverse_pin 50 //to change direction of rear motor
 #define v_pin 63 //voltage reading
-float pwm = 69; //starting pwm
+float pwm = 70; //starting pwm
 float tOld = 0; //first time reading
 float tNew = 0; //second time reading
 double T = 0;
@@ -24,6 +25,8 @@ void setup() {
   Serial.begin(9600);
   pinMode(in_pin, INPUT);
   pinMode(pwm_rear, OUTPUT);
+  pinMode(reverse_pin, OUTPUT);
+  digitalWrite(reverse_pin,HIGH);//when high the motor goes forward
 
   while (x < pwm) { //Ramps up speed- Workaround for rear motor safety features
     analogWrite(pwm_rear, x);
