@@ -2,7 +2,8 @@
 #define pwm_rear 8 //rear motor PWM pin
 #define reverse_pin 50 //to change direction of rear motor
 #define v_pin 63 //voltage reading
-float pwm = 70; //starting pwm
+
+float pwm = 0; //starting pwm
 float tOld = 0; //first time reading
 float tNew = 0; //second time reading
 double T = 0;
@@ -27,12 +28,8 @@ void setup() {
   pinMode(pwm_rear, OUTPUT);
   pinMode(reverse_pin, OUTPUT);
   digitalWrite(reverse_pin,HIGH);//when high the motor goes forward
-
-  while (x < pwm) { //Ramps up speed- Workaround for rear motor safety features
-    analogWrite(pwm_rear, x);
-    delay(100);
-    x = x + 10;
-  }
+  
+  
   float voltage = analogRead(63) / 14.2 * pwm / 180;
   analogWrite(pwm_rear, pwm);
   attachInterrupt(digitalPinToInterrupt(in_pin), getT, RISING); //Interrupt
@@ -59,5 +56,14 @@ void getT() {
     w = (1E6) / (28 * T) ;
     if (w < 100) {
       Serial.println(w, 3);
+  }
+}
+
+void rampToPWM(float newPWM){
+
+while (newPWM < pwm) { //Ramps up speed- Workaround for rear motor safety features
+    analogWrite(pwm_rear, x);
+    delay(100);
+    newPWM = newPWM + 10;
   }
 }
