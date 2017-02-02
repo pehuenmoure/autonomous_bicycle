@@ -31,7 +31,7 @@ port.on('data', function(d){
 		data[i] = d;
 		i ++;
 	}
-})
+});
 
 app.get('/', function(req, res){
 	res.render('index');
@@ -40,3 +40,8 @@ app.get('/', function(req, res){
 server.listen(8000, function() {
     console.log('listening on 8000');
 });
+
+setInterval( function() {
+	//console.log('data sent');
+	io.emit('data-msg', [Math.floor(Math.random() * 100),Math.floor(Math.random() * 100),Math.floor(Math.random() * 100),Math.floor(Math.random() * 100)]);
+}, 500)
