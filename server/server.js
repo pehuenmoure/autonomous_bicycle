@@ -37,11 +37,6 @@ app.get('/', function(req, res){
 	res.render('index');
 });
 
-server.listen(8000, function() {
-    console.log('listening on 8000');
+server.listen(8000, function(){
+	console.log('listening on 8000');
 });
-
-setInterval( function() {
-	//console.log('data sent');
-	io.emit('data-msg', [Math.floor(Math.random() * 100),Math.floor(Math.random() * 100),Math.floor(Math.random() * 100),Math.floor(Math.random() * 100)]);
-}, 500)
