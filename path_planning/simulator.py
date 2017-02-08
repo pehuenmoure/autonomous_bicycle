@@ -50,13 +50,11 @@ class triangle (plt.Polygon):
 	'''
 	def rotate(self, phi, radius):
 		sign = (phi/abs(phi))
-		theta = np.mod(self.theta - sign*90, 360)
-		theta2 = np.mod(theta + phi, 360)
-		center_x = self.x - radius * np.cos(np.radians(theta))
-		center_y = self.y - radius * np.sin(np.radians(theta))
-		x2 = center_x + radius * np.cos(np.radians(theta2))
-		y2 = center_y + radius * np.sin(np.radians(theta2))
-		theta2 = np.mod(theta2 + sign*90, 360)
+		theta = np.mod(np.radians(self.theta) - sign*np.pi/2, 2*np.pi)
+		theta2 = np.mod(theta + np.radians(phi), 2*np.pi)
+		x2 = self.x + radius * (np.cos(theta2) - np.cos(theta))
+		y2 = self.y + radius * (np.sin(theta2) - np.sin(theta))
+		theta2 = np.degrees(np.mod(theta2 + sign*np.pi/2, 2*np.pi))
 		self.set_xy(self.get_coordinates(x2, y2, self.h, self.r, theta2))
 		self.theta = theta2
 		self.x = x2
