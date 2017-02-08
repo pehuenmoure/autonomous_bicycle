@@ -44,14 +44,23 @@ class triangle (plt.Polygon):
 		self.y = y
 		return self
 
+	'''
+	Positive phi turns the bike counter clockwise
+	Negative phi turns the bike clockwise
+	'''
 	def rotate(self, phi, radius):
-		temp_t = np.mod(self.theta + phi, 360)
-		temp_x = self.x + radius * np.cos(np.radians(temp_t))
-		temp_y = self.y + radius * np.sin(np.radians(temp_t))
-		self.set_xy(self.get_coordinates(temp_x, temp_y, self.h, self.r, temp_t))
-		self.theta = temp_t
-		self.x = temp_x
-		self.y = temp_y
+		sign = (phi/abs(phi))
+		theta = np.mod(self.theta - sign*90, 360)
+		theta2 = np.mod(theta + phi, 360)
+		center_x = self.x - radius * np.cos(np.radians(theta))
+		center_y = self.y - radius * np.sin(np.radians(theta))
+		x2 = center_x + radius * np.cos(np.radians(theta2))
+		y2 = center_y + radius * np.sin(np.radians(theta2))
+		theta2 = np.mod(theta2 + sign*90, 360)
+		self.set_xy(self.get_coordinates(x2, y2, self.h, self.r, theta2))
+		self.theta = theta2
+		self.x = x2
+		self.y = y2
 		return self
 
 
