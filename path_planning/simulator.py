@@ -12,6 +12,7 @@ import numpy as np
 import matplotlib
 from matplotlib import pyplot as plt
 from matplotlib import animation
+from matplotlib import collections  as mc
 from pprint import pprint
 import struct
 import time
@@ -82,6 +83,8 @@ class Simulator(object):
 		ax = plt.axes(xlim=(0, 10), ylim=(0, 10))
 		self.bike_sim = bike_sim(map_model.bike)
 		ax.add_patch(self.bike_sim)
+		lc = mc.LineCollection(self.map_model.paths, linewidths=2)
+		ax.add_collection(lc)
 
 	def run(self):
 		anim = animation.FuncAnimation(self.fig, self.update_bike,  
@@ -91,7 +94,7 @@ class Simulator(object):
 
 	def update_bike(self, i):
 		self.bike_sim.update_bike()
-		dir_to_turn = self.nav.direction_to_turn((0,0),(1,0))
+		dir_to_turn = self.nav.direction_to_turn()
 		if dir_to_turn == 0:
 			print 'straight'
 			self.bike_sim.move_straight()

@@ -10,12 +10,22 @@ class Map_Model(object):
 	obstacles [list]: list of triples (x, y, r) which represent the coordinates
 					   of the obstacles and the radius """
 
-	def __init__(self, bike, waypoints, obstacles):
+	def __init__(self, bike, waypoints, obstacles, paths = []):
 		""" Map initializer """
 
 		self.bike = bike
+		self.paths = paths
 		self.waypoints = waypoints
 		self.obstacles = obstacles
+
+	def add_path(self, p1, p2):
+		self.paths.append([p1,p2])
+
+	def get_path_vector(self, path_index):
+		point1 = self.paths[path_index][0]
+		point2 = self.paths[path_index][1]
+		return np.array([point2[0]-point1[0], point2[1]-point1[1]])
+
 
 
 class Nav(object):
@@ -26,6 +36,7 @@ class Nav(object):
 	def __init__(self, map_model):
 		""" Nav initializer """
 		self.map_model = map_model
+		self.target_path = 0
 
 	def path_length(self, point1, point2):
 		""" point1 and point2 are the two point tuples that define a line segment
@@ -50,11 +61,12 @@ class Nav(object):
 		return np.degrees(angle)
 
 
-	def direction_to_turn(self, point1, point2):
+	def direction_to_turn(self):
+
 		bike_vector = np.array([math.cos(self.map_model.bike.direction), math.sin(self.map_model.bike.direction)])
-		path_vector = np.array([point2[0]-point1[0], point2[1]-point1[1]])
+		path_vector = self.map_model.get_path_vector(self.target_path)
 		dot_product = np.sum(bike_vector*path_vector)
-		return 0 if np.abs(dot_product)<.01 else dot_product/abs(dot_product)*(-1)
+		return 0 if np.abs(dot_product)<.1 else dot_product/abs(dot_product)*(-1)
 
 
 
@@ -80,8 +92,10 @@ class Bike(object):
 
 if __name__ == '__main__':
 	import simulator
-	new_bike = Bike((5,5), np.radians(80), .01)
+	new_bike = Bike((5,5), np.radians(80), .02)
 	new_map = Map_Model(new_bike, [], [])
+	new_map.add_path((5,0),(8,10))
+	#new_map.add_path((0,1),(5.3,1))
 	new_nav = Nav(new_map)
 	sim = simulator.Simulator(new_map, new_nav)
 	sim.run()
