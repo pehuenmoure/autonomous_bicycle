@@ -79,11 +79,29 @@ class Nav(object):
 
 
 	def direction_to_turn(self):
-		print self.distance_from_path()
+		p = self.map_model.get_path_vector(self.target_path)
+		b = self.map_model.bike.vector
+		print self.distance_from_path(), self.displacement_to_turn()
 		if np.abs(self.distance_from_path())>self.map_model.bike.turning_r:
 			return self.turn_perp()
 		else:
+			'''if np.sum(p*b)<0:
+				return self.turn_perp()
+			else:
+				if '''
 			return self.turn_parallel()
+
+
+	def displacement_to_turn(self):
+		p = self.map_model.get_path_vector(self.target_path)
+		b = self.map_model.bike.vector
+		R = np.array([[p[0], p[1]], [-p[1], p[0]]])
+		p_R = R.dot(p)
+		b_R = R.dot(b)
+		phi = (np.arccos(b_R[0])-np.pi/2)%(2*np.pi)
+		r = self.map_model.bike.turning_r
+		delta = r+r*np.sin(phi)
+		return delta
 
 
 	def turn_parallel(self):
@@ -120,11 +138,12 @@ class Bike(object):
 		self.direction = direction
 		self.speed = speed
 		self.h = 0.5
-		self.turning_r = 1
+		self.turning_r = 2
 
 	@property
 	def vector(self):
-		return np.array([math.cos(self.direction), math.sin(self.direction)])
+		b = np.array([math.cos(self.direction), math.sin(self.direction)])
+		return b/np.linalg.norm(b)
 
 
 
