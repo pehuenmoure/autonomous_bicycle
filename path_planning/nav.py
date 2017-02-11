@@ -79,17 +79,30 @@ class Nav(object):
 
 
 	def direction_to_turn(self):
+		distance = self.distance_from_path()
+		sign = self._sign(self.distance_from_path())
+		distance = np.abs(distance)
 		p = self.map_model.get_path_vector(self.target_path)
 		b = self.map_model.bike.vector
-		print self.distance_from_path(), self.displacement_to_turn()
-		if np.abs(self.distance_from_path())>self.map_model.bike.turning_r:
+		r = self.map_model.bike.turning_r
+		delta = np.abs(self.displacement_to_turn())
+		if distance>r:
 			return self.turn_perp()
 		else:
-			'''if np.sum(p*b)<0:
+			if np.abs(np.sum(p*b))<.01:
+					return self.turn_parallel()
+
+			elif np.sum(p*b)<0:  #outside 90 degrees of path direction
 				return self.turn_perp()
 			else:
-				if '''
-			return self.turn_parallel()
+				p_perp = np.array([-p[1], p[0]])*sign
+				if np.sum(p_perp*b)>0: #facing away from path
+					return self.turn_perp()
+				else:
+					if delta<distance:
+						return self.turn_perp()
+					else:
+						return self.turn_parallel()
 
 
 	def displacement_to_turn(self):
@@ -112,9 +125,8 @@ class Nav(object):
 	def turn_perp(self):
 		path_vector = self.map_model.get_path_vector(self.target_path)
 		p_orig = path_vector
-		x_sign = self._sign(self.distance_from_path())
-		print self._sign(self.distance_from_path())
-		path_vector = path_vector*x_sign
+		sign = self._sign(self.distance_from_path())
+		path_vector = path_vector*sign
 		return self.turn_helper(path_vector)
 
 	def turn_helper(self, path_vector):
@@ -149,10 +161,11 @@ class Bike(object):
 
 if __name__ == '__main__':
 	import simulator
-	new_bike = Bike((6,2), np.radians(80), .02)
+	#new_bike = Bike((6,2), np.radians(80), .02)
+	new_bike = Bike((1,1), np.radians(0), .02)
 	new_map = Map_Model(new_bike, [], [])
-	new_map.add_path((8,10), (0,1))
-	#new_map.add_path((0,1),(5.3,1))
+	#new_map.add_path((8,10), (0,1))
+	new_map.add_path((0,0),(10,10))
 	new_nav = Nav(new_map)
 	sim = simulator.Simulator(new_map, new_nav)
 	sim.run()
