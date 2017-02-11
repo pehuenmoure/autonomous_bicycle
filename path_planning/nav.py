@@ -49,6 +49,11 @@ class Nav(object):
 	# 	angle = math.acos((point1[0]-point2[0])/length)
 	# 	return angle
 
+	def _sign(self, v):
+		if v == 0:
+			return 0
+		else:
+			return v/np.abs(v)
 
 	def angle_from_path(self, point1, point2):
 		""" [angle_from_path] returns the angle that the bicycle has to turn to 
@@ -58,7 +63,7 @@ class Nav(object):
 		path_vector = (point2[0]-point1[0], point2[1]-point1[1])
 		dot_product = bike_vector[0]*path_vector[0] + bike_vector[1]*path_vector[1]
 		
-		angle = dot_product/abs(dot_product)*math.acos(dot_product/self.path_length(point1, point2))
+		angle = self._sign(dot_product)*math.acos(dot_product/self.path_length(point1, point2))
 		return np.degrees(angle)
 
 	def distance_from_path(self):
@@ -74,7 +79,8 @@ class Nav(object):
 
 
 	def direction_to_turn(self):
-		if self.distance_from_path()>self.map_model.bike.turning_r:
+		print self.distance_from_path()
+		if np.abs(self.distance_from_path())>self.map_model.bike.turning_r:
 			return self.turn_perp()
 		else:
 			return self.turn_parallel()
@@ -87,12 +93,16 @@ class Nav(object):
 
 	def turn_perp(self):
 		path_vector = self.map_model.get_path_vector(self.target_path)
+		p_orig = path_vector
+		x_sign = self._sign(self.distance_from_path())
+		print self._sign(self.distance_from_path())
+		path_vector = path_vector*x_sign
 		return self.turn_helper(path_vector)
 
 	def turn_helper(self, path_vector):
 		bike_vector = self.map_model.bike.vector
 		dot_product = np.sum(bike_vector*path_vector)
-		return 0 if np.abs(dot_product)<.01 else dot_product/abs(dot_product)*(-1)
+		return 0 if np.abs(dot_product)<.01 else self._sign(dot_product)*(-1)
 
 
 
@@ -120,9 +130,9 @@ class Bike(object):
 
 if __name__ == '__main__':
 	import simulator
-	new_bike = Bike((2,8), np.radians(80), .02)
+	new_bike = Bike((6,2), np.radians(80), .02)
 	new_map = Map_Model(new_bike, [], [])
-	new_map.add_path((0,1),(8,10))
+	new_map.add_path((8,10), (0,1))
 	#new_map.add_path((0,1),(5.3,1))
 	new_nav = Nav(new_map)
 	sim = simulator.Simulator(new_map, new_nav)
