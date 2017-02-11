@@ -27,7 +27,7 @@ class bike_sim (plt.Polygon):
 		self.x = bike.xy_coord[0]
 		self.y = bike.xy_coord[1]
 		self.h = bike.h
-		self.r = bike.r
+		self.r = .15
 		self.theta = bike.direction
 		plt.Polygon.__init__(self, self.get_coordinates(self.x, self.y, self.h, self.r, self.theta))
 
@@ -96,11 +96,11 @@ class Simulator(object):
 		self.bike_sim.update_bike()
 		dir_to_turn = self.nav.direction_to_turn()
 		if dir_to_turn == 0:
-			print 'straight'
+			print('straight')
 			self.bike_sim.move_straight()
 		else:
 			print 'ccw' if dir_to_turn == 1 else 'cw'
-			self.bike_sim.rotate(dir_to_turn, 1)
+			self.bike_sim.rotate(dir_to_turn, self.bike_sim.bike.turning_r)
 		return self.bike_sim,
 
 

@@ -74,10 +74,26 @@ class Nav(object):
 
 
 	def direction_to_turn(self):
-		bike_vector = self.map_model.bike.vector
+		if self.distance_from_path()>self.map_model.bike.turning_r:
+			return self.turn_perp()
+		else:
+			return self.turn_parallel()
+
+
+	def turn_parallel(self):
 		path_vector = self.map_model.get_path_vector(self.target_path)
+		path_perp = np.array([-path_vector[1], path_vector[0]])
+		return self.turn_helper(path_perp)
+
+	def turn_perp(self):
+		path_vector = self.map_model.get_path_vector(self.target_path)
+		return self.turn_helper(path_vector)
+
+	def turn_helper(self, path_vector):
+		bike_vector = self.map_model.bike.vector
 		dot_product = np.sum(bike_vector*path_vector)
-		return 0 if np.abs(dot_product)<.1 else dot_product/abs(dot_product)*(-1)
+		return 0 if np.abs(dot_product)<.01 else dot_product/abs(dot_product)*(-1)
+
 
 
 
@@ -94,7 +110,7 @@ class Bike(object):
 		self.direction = direction
 		self.speed = speed
 		self.h = 0.5
-		self.r = 0.15
+		self.turning_r = 1
 
 	@property
 	def vector(self):
