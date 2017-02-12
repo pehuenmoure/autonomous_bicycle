@@ -84,8 +84,9 @@ class Simulator(object):
 		self.bike_sim = bike_sim(map_model.bike)
 		ax.add_patch(self.bike_sim)
 		lc = mc.LineCollection(self.map_model.paths, linewidths=2,
-			color = "brown")
+			color = "black")
 		ax.add_collection(lc)
+		plt.plot(self.map_model.waypoints[0], self.map_model.waypoints[1], 'ro')
 
 	def run(self):
 		anim = animation.FuncAnimation(self.fig, self.update_bike,  

@@ -22,6 +22,12 @@ class Map_Model(object):
 	def add_path(self, p1, p2):
 		""" Adds a new path from p1 to p2 at the end of the path list """
 		self.paths.append([p1,p2])
+		print p1
+		print p2
+		self.waypoints[0].append(p1[0])
+		self.waypoints[0].append(p2[0])
+		self.waypoints[1].append(p1[1])
+		self.waypoints[1].append(p2[1])
 
 	def get_path_vector(self, path_index):
 		""" Returns the unit vector of the path with index path_index """
@@ -206,17 +212,10 @@ class Bike(object):
 
 if __name__ == '__main__':
 	import simulator
-<<<<<<< HEAD
-	new_bike = Bike((1,10), np.radians(89), .02)
-	new_map = Map_Model(new_bike, [], [])
-	#new_map.add_path((1,0),(1, 10))
-	new_map.add_path((0,4),(10, 4))
-=======
-	new_bike = Bike((1,1), np.radians(0), .02)
-	new_map = Map_Model(new_bike, [], [])
+	new_bike = Bike((6,1), np.radians(90), .02)
+	new_map = Map_Model(new_bike, [[],[]], [])
 	new_map.add_path((8,0),(8, 10))
 	#new_map.add_path((0,4),(10, 4))
->>>>>>> 8cdd85dc97ef8480326a82ea5894f31866b1d6ee
 	new_nav = Nav(new_map)
 	sim = simulator.Simulator(new_map, new_nav)
 	sim.run()
