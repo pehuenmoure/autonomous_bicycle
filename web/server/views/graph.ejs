@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <!-- <script type="text/javascript" src="assets/script/canvasjs.min.js"></script> -->
+  <script src="http://canvasjs.com/assets/script/canvasjs.min.js"></script>
+  <title>Index</title>
+
+   <style>
+      body { font: 13px Helvetica, Arial; }
+    table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 50%;}
+
+    td, th {
+        border: 1px solid #dddddd;
+        text-align: center;
+        width: 6px;}
+
+    tr:nth-child(even) {
+      background-color: #dddddd;}
+    </style>
+</head>
+
+<body>
+  <h1>Autonomous Bicycle Team</h1>
+
+  <div id="chartContainer" style="height: 300px; width:100%;"></div>
+  <table align = "center" id = data></table>
+
+  <script type="text/javascript">
+    var d0 = [];
+    var d1 = []; 
+    var d2 = [];
+    var d3 = [];
+    var data = [d0, d1, d2, d3]; // dataPoints
+
+    var chart = new CanvasJS.Chart("chartContainer",{
+      backgroundColor: "#F5DEB3",
+      title :{
+        text: "Live Data"
+      },      
+      data: [{
+        type: "line",
+        dataPoints: d0 
+      },{
+        type: "line",
+        dataPoints: data[1] 
+      },{
+        type: "line",
+        dataPoints: data[2] 
+      },{
+        type: "line",
+        dataPoints: data[3] 
+      }]
+    });
+    chart.render();
+    var xVal = 0;
+    var yVal = 100; 
+    var dataLength = 50; // number of dataPoints visible at any point
+
+    var updateChart = function (newData) {
+      for (var j = 0; j < 4; j++) { 
+        data[j].push({
+          x: xVal,
+          y: newData[j]
+        });
+      };
+      xVal++;
+
+      if (data[0].length > dataLength){
+        data.map(function (i){
+          return i.shift()
+        });       
+      }
+      
+      //chart.render();   
+    };
+
+    var socket = io();
+
+    socket.on('data-msg', function(d){
+      //console.log("data recieved - server side");
+      $('#data').prepend('<tr>' + format(d) + '</tr>');
+      updateChart(d);
+    });
+
+    function format(array){
+      var s = "";
+      for (i = 0; i < array.length; i++){
+        s = s + "<th>" + array[i] + "</th>"
+      }return s;
+    }
+
+  </script>
+</body>
+
+</html>
