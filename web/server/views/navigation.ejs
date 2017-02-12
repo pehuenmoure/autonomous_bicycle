@@ -5,11 +5,60 @@
     <title>layout</title>
     <meta name="description" content="">
     <meta name="author" content="">
-
-    <link href="stylesheets/style.css" rel="stylesheet">
     <h1>navigation</h1>
+    <button type="button" class="btn btn-warning" onclick="deleteMarkers()">Delete markers</button>
   </head>
   <body>
+    <div id="map"></div>
+    <script>
+      // google.maps.Marker array
+      var waypoints = []
+
+      function initMap() {
+        var artsQuad = new google.maps.LatLng(42.449082, -76.484529)
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 17,
+          center: artsQuad
+        });
+
+        map.addListener('click', function(e) {
+          var newMarker = placeMarker(e.latLng, map);
+          waypoints.push(newMarker)
+          logGPS(waypoints)
+         });
+      }
+
+      function placeMarker(latLng, map) {
+        var index = waypoints.length
+        var marker = new google.maps.Marker({
+          position: latLng,
+          map: map,
+          draggable: true,
+          icon: 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld='+index+'|FE6256|000000'
+        });
+        return marker
+      }
+
+      function deleteMarkers(){
+        for (var i = 0; i < waypoints.length; i++) {
+          waypoints[i].setMap(null);
+        }
+        // clear array
+        waypoints = [];
+      }
+
+      function logGPS(waypoints){
+        console.log("waypoint coordinates")
+        for (var i = 0; i < waypoints.length; i++){
+          console.log(waypoints[i].position.toString())
+        }
+      }
+
+    </script>
+
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA1sQ8YT-4yGVDG0SRFhlwjHHGmhsXTIxI&callback=initMap">
+    </script>
 
   </body>
 </html> 
