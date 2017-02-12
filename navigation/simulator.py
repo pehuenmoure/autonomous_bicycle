@@ -80,10 +80,11 @@ class Simulator(object):
 		self.nav = nav
 		self.fig = plt.figure()
 		self.fig.set_dpi(100)
-		ax = plt.axes(xlim=(0, 10), ylim=(0, 10))
+		ax = plt.axes(xlim=(0, 20), ylim=(0, 20))
 		self.bike_sim = bike_sim(map_model.bike)
 		ax.add_patch(self.bike_sim)
-		lc = mc.LineCollection(self.map_model.paths, linewidths=2)
+		lc = mc.LineCollection(self.map_model.paths, linewidths=2,
+			color = "brown")
 		ax.add_collection(lc)
 
 	def run(self):

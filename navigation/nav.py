@@ -1,6 +1,7 @@
 # nav.py
 import numpy as np
 import math
+import sys
 
 
 class Map_Model(object):
@@ -19,14 +20,53 @@ class Map_Model(object):
 		self.obstacles = obstacles
 
 	def add_path(self, p1, p2):
+		""" Adds a new path from p1 to p2 at the end of the path list """
 		self.paths.append([p1,p2])
 
 	def get_path_vector(self, path_index):
+		""" Returns the unit vector of the path with index path_index """
 		point1 = self.paths[path_index][0]
 		point2 = self.paths[path_index][1]
 		v =  np.array([point2[0]-point1[0], point2[1]-point1[1]])
 		return v/np.linalg.norm(v)
 
+	def dist(self, point1, point2):
+		""" Calculates the distance between two points """
+		return np.sqrt(self.dist2(point1, point2))	
+
+	def dist2(self, point1, point2):
+		return (np.square(point1[0]-point2[0]) + np.square(point1[1]-point2[1]))	
+
+	def find_nearest_point_on_path(self, path_index):
+		""" Returns the nearest point to the bike on the path with index 
+		path_index """
+		bike_coord = self.bike.xy_coord
+		point1 = self.paths[path_index][0]
+		point2 = self.paths[path_index][1]
+		dist = self.dist(point1, point2)
+		
+		d2 = self.dist2(point1, point2)
+		t = ((bike_coord[0] - point1[0])*(point2[0]-point1[0]) + (bike_coord[1] - point1[1]) * (point2[1] - point1[1]))/d2
+		if (t < 0):
+			return point1
+		elif (t > 1):
+			return point2
+		else:
+			x = point1[0] + t * (point2[0]-point1[0])
+			y = point1[1] + t * (point2[1]-point1[1])
+			return (x, y)
+
+	def find_closest_path(self):
+		""" Finds and returns the closest path to the bike from the list of paths """
+		closest_distance = sys.maxint
+		closest_path = 0
+		for path_index in range(len(self.paths)):
+			nearest_point = self.find_nearest_point_on_path(path_index)
+			distance_to_bike = self.dist(nearest_point, self.bike.xy_coord)
+			if (closest_distance > distance_to_bike):
+				closest_distance = distance_to_bike
+				closest_path = path_index
+		return closest_path
 
 
 class Nav(object):
@@ -67,18 +107,21 @@ class Nav(object):
 		return np.degrees(angle)
 
 	def distance_from_path(self):
+		""""""
+		p1 = np.array(self.map_model.paths[self.target_path][0])
 		v = self.map_model.get_path_vector(self.target_path)
 		if v[0] == 0:
-			return x
+			return self.map_model.bike.xy_coord[0] - p1[0]
 		v_perp = np.array([v[1], -1*v[0]])
 		bike_coords = np.array(self.map_model.bike.xy_coord)
-		p1 = np.array(self.map_model.paths[self.target_path][0])
 		r = p1 - bike_coords
 		dist = np.sum(v_perp*r)
 		return dist
 
 
 	def direction_to_turn(self):
+		self.target_path = self.map_model.find_closest_path()
+		print self.target_path, "TARGET PATH"
 		distance = self.distance_from_path()
 		sign = self._sign(self.distance_from_path())
 		distance = np.abs(distance)
@@ -136,8 +179,6 @@ class Nav(object):
 
 
 
-
-
 class Bike(object):
 	"""INSTANCE ATTRIBUTES:
 	xy_coord  [tuple]: x and y coordinate of bicycle
@@ -161,9 +202,10 @@ class Bike(object):
 
 if __name__ == '__main__':
 	import simulator
-	new_bike = Bike((3,1), np.radians(0), .02)
+	new_bike = Bike((1,1), np.radians(0), .02)
 	new_map = Map_Model(new_bike, [], [])
-	new_map.add_path((0,0),(10,10))
+	new_map.add_path((0,5),(5, 0))
+	new_map.add_path((5,0),(10, 5))
 	new_nav = Nav(new_map)
 	sim = simulator.Simulator(new_map, new_nav)
 	sim.run()
