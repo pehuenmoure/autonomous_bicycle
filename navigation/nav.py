@@ -41,6 +41,7 @@ class Map_Model(object):
 		return np.sqrt(self.dist2(point1, point2))	
 
 	def dist2(self, point1, point2):
+		"""Calculates the square of the distance of the two points """
 		return (np.square(point1[0]-point2[0]) + np.square(point1[1]-point2[1]))	
 
 	def find_nearest_point_on_path(self, path_index):
