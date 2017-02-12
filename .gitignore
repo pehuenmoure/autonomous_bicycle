@@ -1,2 +1,6 @@
 *.pyc
+<<<<<<< HEAD
 server/node_modules
+=======
+web/server/node_modules
+>>>>>>> 8cdd85dc97ef8480326a82ea5894f31866b1d6ee
