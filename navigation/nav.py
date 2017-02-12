@@ -202,10 +202,10 @@ class Bike(object):
 
 if __name__ == '__main__':
 	import simulator
-	new_bike = Bike((1,1), np.radians(0), .02)
+	new_bike = Bike((10,0), np.radians(0), .02)
 	new_map = Map_Model(new_bike, [], [])
-	new_map.add_path((0,5),(5, 0))
-	new_map.add_path((5,0),(10, 5))
+	#new_map.add_path((1,0),(1, 10))
+	new_map.add_path((8,0),(8, 10))
 	new_nav = Nav(new_map)
 	sim = simulator.Simulator(new_map, new_nav)
 	sim.run()
