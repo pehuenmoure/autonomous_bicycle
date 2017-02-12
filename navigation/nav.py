@@ -111,7 +111,7 @@ class Nav(object):
 		p1 = np.array(self.map_model.paths[self.target_path][0])
 		v = self.map_model.get_path_vector(self.target_path)
 		if v[0] == 0:
-			return self.map_model.bike.xy_coord[0] - p1[0]
+			return p1[0] - self.map_model.bike.xy_coord[0]
 		v_perp = np.array([v[1], -1*v[0]])
 		bike_coords = np.array(self.map_model.bike.xy_coord)
 		r = p1 - bike_coords
@@ -175,7 +175,11 @@ class Nav(object):
 	def turn_helper(self, path_vector):
 		bike_vector = self.map_model.bike.vector
 		dot_product = np.sum(bike_vector*path_vector)
-		return 0 if np.abs(dot_product)<.01 else self._sign(dot_product)*(-1)
+		turn = 0 if np.abs(dot_product)<.01 else self._sign(dot_product)*(-1)
+		facing_away = np.sum(np.array([-path_vector[1], path_vector[0]])*bike_vector)>0
+		if turn == 0 and facing_away:
+			return 1
+		return turn
 
 
 
@@ -202,10 +206,17 @@ class Bike(object):
 
 if __name__ == '__main__':
 	import simulator
+<<<<<<< HEAD
+	new_bike = Bike((1,10), np.radians(89), .02)
+	new_map = Map_Model(new_bike, [], [])
+	#new_map.add_path((1,0),(1, 10))
+	new_map.add_path((0,4),(10, 4))
+=======
 	new_bike = Bike((1,1), np.radians(0), .02)
 	new_map = Map_Model(new_bike, [], [])
-	new_map.add_path((0,5),(5, 0))
-	new_map.add_path((5,0),(10, 5))
+	new_map.add_path((8,0),(8, 10))
+	#new_map.add_path((0,4),(10, 4))
+>>>>>>> 8cdd85dc97ef8480326a82ea5894f31866b1d6ee
 	new_nav = Nav(new_map)
 	sim = simulator.Simulator(new_map, new_nav)
 	sim.run()
