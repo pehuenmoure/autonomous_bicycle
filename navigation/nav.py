@@ -29,6 +29,12 @@ class Map_Model(object):
 		self.waypoints[1].append(p1[1])
 		self.waypoints[1].append(p2[1])
 
+	def add_point(self, p):
+		previous_point = self.paths[-1][1]
+		self.paths.append([previous_point, p])
+		self.waypoints[0].append(p[0])
+		self.waypoints[1].append(p[1])
+
 	def get_path_vector(self, path_index):
 		""" Returns the unit vector of the path with index path_index """
 		point1 = self.paths[path_index][0]
@@ -207,7 +213,6 @@ class Nav(object):
 				closest_path = path_index
 		disp_next = self.displacement_to_turn(target_path = (closest_path+1)%len(self.map_model.paths))
 		distance_next = self.distance_from_path((closest_path+1)%len(self.map_model.paths))
-		print self.target_path, disp_next, distance_next
 		if disp_next - np.abs(distance_next)>-0.01:
 			closest_path = np.mod(closest_path + 1,len(self.map_model.paths))
 		return closest_path
@@ -237,12 +242,15 @@ class Bike(object):
 
 if __name__ == '__main__':
 	import simulator
-	new_bike = Bike((1,3), np.radians(-45), .02)
+	new_bike = Bike((2,2), np.radians(-10), .02)
 	new_map = Map_Model(new_bike, [[],[]], [])
 	new_map.add_path((1,1), (8,1))
-	new_map.add_path((8,1), (10,8))
-	new_map.add_path((10,8), (1,8))
-	new_map.add_path((1,8), (1,1))
+	#new_map.add_path((8,1), (10,8))
+	#new_map.add_path((10,8), (1,8))
+	#new_map.add_path((1,8), (1,1))
+	new_map.add_point((10,8))
+	new_map.add_point((1,8))
+	new_map.add_point((1,1))
 	new_nav = Nav(new_map)
 	sim = simulator.Simulator(new_map, new_nav)
 	sim.run()
