@@ -72,13 +72,15 @@ class Map_Model(object):
 			if (closest_distance > distance_to_bike):
 				closest_distance = distance_to_bike
 				closest_path = path_index
+		desired_point = self.paths[closest_path][1]
+		if self.dist(desired_point, self.bike.xy_coord) < self.bike.turning_r:
+			closest_path = np.mod(closest_path + 1,len(self.paths))
 		return closest_path
 
 
 class Nav(object):
 	"""INSTANCE ATTRIBUTES:
 		map [Map object] """
-
 
 	def __init__(self, map_model):
 		""" Nav initializer """
@@ -126,8 +128,7 @@ class Nav(object):
 
 
 	def direction_to_turn(self):
-		self.target_path = self.map_model.find_closest_path()
-		print self.target_path, "TARGET PATH"
+		self.target_path = self.find_closest_path()
 		distance = self.distance_from_path()
 		sign = self._sign(self.distance_from_path())
 		distance = np.abs(distance)
@@ -154,9 +155,12 @@ class Nav(object):
 						return self.turn_parallel()
 
 
-	def displacement_to_turn(self):
-		p = self.map_model.get_path_vector(self.target_path)
-		b = self.map_model.bike.vector
+	def displacement_to_turn(self, b = None, target_path = None):
+		if target_path is None:
+			target_path = self.target_path
+		p = self.map_model.get_path_vector(target_path)
+		if b is None:
+			b = self.map_model.bike.vector
 		R = np.array([[p[0], p[1]], [-p[1], p[0]]])
 		p_R = R.dot(p)
 		b_R = R.dot(b)
@@ -187,6 +191,28 @@ class Nav(object):
 			return 1
 		return turn
 
+	def find_closest_path(self):
+		""" Finds and returns the closest path to the bike from the list of paths """
+		closest_distance = sys.maxint
+		closest_path = 0
+		for path_index in range(len(self.map_model.paths)):
+			nearest_point = self.map_model.find_nearest_point_on_path(path_index)
+			distance_to_bike = self.map_model.dist(nearest_point, self.map_model.bike.xy_coord)
+			if (closest_distance > distance_to_bike):
+				closest_distance = distance_to_bike
+				closest_path = path_index
+		desired_point = self.map_model.paths[closest_path][1]
+		disp_next = self.displacement_to_turn(self.map_model.get_path_vector(closest_path),(closest_path+1)%len(self.map_model.paths))
+		distance_next = self.map_model.dist(desired_point, self.map_model.bike.xy_coord)
+		#print disp_next, self.distance_from_path()
+		if disp_next - distance_next>-0.01:
+			print 'in here', closest_path
+			closest_path = np.mod(closest_path + 1,len(self.map_model.paths))
+		else:
+			print 'not', closest_path
+			#print "TIMES TURN"
+		return closest_path
+
 
 
 class Bike(object):
@@ -212,10 +238,13 @@ class Bike(object):
 
 if __name__ == '__main__':
 	import simulator
-	new_bike = Bike((6,1), np.radians(90), .02)
+	new_bike = Bike((1,3), np.radians(-45), .02)
 	new_map = Map_Model(new_bike, [[],[]], [])
-	new_map.add_path((8,0),(8, 10))
-	#new_map.add_path((0,4),(10, 4))
+	new_map.add_path((1,1), (8,1))
+	new_map.add_path((8,1), (8,8))
+	# new_map.add_path((5,8), (0,20))
+	new_map.add_path((8,8), (1,8))
+	new_map.add_path((1,8), (1,1))
 	new_nav = Nav(new_map)
 	sim = simulator.Simulator(new_map, new_nav)
 	sim.run()
