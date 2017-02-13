@@ -35,6 +35,18 @@ class Map_Model(object):
 		self.waypoints[0].append(p[0])
 		self.waypoints[1].append(p[1])
 
+	def draw_circle(self, center, r, n_points):
+		deg_inc = 2*np.pi/n_points
+		theta = deg_inc
+		p0 = np.array(center) + np.array([r, 0])
+		p1 = np.array(center) + np.array([r*np.cos(theta), r*np.sin(theta)])
+		self.add_path(p0, p1)
+		for i in range(2, n_points+1):
+			next_point = np.array(center) + np.array([r*np.cos(i*theta), r*np.sin(i*theta)])
+			self.add_point(next_point)
+
+
+
 	def get_path_vector(self, path_index):
 		""" Returns the unit vector of the path with index path_index """
 		point1 = self.paths[path_index][0]
@@ -244,13 +256,11 @@ if __name__ == '__main__':
 	import simulator
 	new_bike = Bike((2,2), np.radians(-10), .02)
 	new_map = Map_Model(new_bike, [[],[]], [])
-	new_map.add_path((1,1), (8,1))
-	#new_map.add_path((8,1), (10,8))
-	#new_map.add_path((10,8), (1,8))
-	#new_map.add_path((1,8), (1,1))
-	new_map.add_point((10,8))
-	new_map.add_point((1,8))
-	new_map.add_point((1,1))
+	#new_map.add_path((1,1), (8,1))
+	#new_map.add_point((10,8))
+	#new_map.add_point((1,8))
+	#new_map.add_point((1,1))
+	new_map.draw_circle((7,7), 5, 20)
 	new_nav = Nav(new_map)
 	sim = simulator.Simulator(new_map, new_nav)
 	sim.run()
