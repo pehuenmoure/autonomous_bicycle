@@ -41,6 +41,7 @@ class Map_Model(object):
 		return np.sqrt(self.dist2(point1, point2))	
 
 	def dist2(self, point1, point2):
+		"""Calculates the square of the distance of the two points """
 		return (np.square(point1[0]-point2[0]) + np.square(point1[1]-point2[1]))	
 
 	def find_nearest_point_on_path(self, path_index):
@@ -62,20 +63,20 @@ class Map_Model(object):
 			y = point1[1] + t * (point2[1]-point1[1])
 			return (x, y)
 
-	def find_closest_path(self):
-		""" Finds and returns the closest path to the bike from the list of paths """
-		closest_distance = sys.maxint
-		closest_path = 0
-		for path_index in range(len(self.paths)):
-			nearest_point = self.find_nearest_point_on_path(path_index)
-			distance_to_bike = self.dist(nearest_point, self.bike.xy_coord)
-			if (closest_distance > distance_to_bike):
-				closest_distance = distance_to_bike
-				closest_path = path_index
-		desired_point = self.paths[closest_path][1]
-		if self.dist(desired_point, self.bike.xy_coord) < self.bike.turning_r:
-			closest_path = np.mod(closest_path + 1,len(self.paths))
-		return closest_path
+	# def find_closest_path(self):
+	# 	""" Finds and returns the closest path to the bike from the list of paths """
+	# 	closest_distance = sys.maxint
+	# 	closest_path = 0
+	# 	for path_index in range(len(self.paths)):
+	# 		nearest_point = self.find_nearest_point_on_path(path_index)
+	# 		distance_to_bike = self.dist(nearest_point, self.bike.xy_coord)
+	# 		if (closest_distance > distance_to_bike):
+	# 			closest_distance = distance_to_bike
+	# 			closest_path = path_index
+	# 	desired_point = self.paths[closest_path][1]
+	# 	if self.dist(desired_point, self.bike.xy_coord) < self.bike.turning_r:
+	# 		closest_path = np.mod(closest_path + 1,len(self.paths))
+	# 	return closest_path
 
 
 class Nav(object):
