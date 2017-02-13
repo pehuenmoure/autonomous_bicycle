@@ -35,8 +35,11 @@ class Map_Model(object):
 		self.waypoints[0].append(p[0])
 		self.waypoints[1].append(p[1])
 
-	def draw_circle(self, center, r, n_points):
-		deg_inc = 2*np.pi/n_points
+	def close_path(self):
+		self.add_point(self.paths[0][0])
+
+	def draw_circle(self, center, r, n_points, degrees = 2*np.pi):
+		deg_inc = float(degrees)/n_points
 		theta = deg_inc
 		p0 = np.array(center) + np.array([r, 0])
 		p1 = np.array(center) + np.array([r*np.cos(theta), r*np.sin(theta)])
@@ -254,13 +257,17 @@ class Bike(object):
 
 if __name__ == '__main__':
 	import simulator
-	new_bike = Bike((2,2), np.radians(-10), .02)
+	new_bike = Bike((5,2), np.radians(-10), .02)
 	new_map = Map_Model(new_bike, [[],[]], [])
 	#new_map.add_path((1,1), (8,1))
 	#new_map.add_point((10,8))
 	#new_map.add_point((1,8))
 	#new_map.add_point((1,1))
-	new_map.draw_circle((7,7), 5, 20)
+	new_map.draw_circle((7,7), 5, 10, np.pi/4)
+	new_map.add_point((10,15))
+	new_map.add_point((15,15))
+	new_map.add_point((18,11))
+	new_map.close_path()
 	new_nav = Nav(new_map)
 	sim = simulator.Simulator(new_map, new_nav)
 	sim.run()
