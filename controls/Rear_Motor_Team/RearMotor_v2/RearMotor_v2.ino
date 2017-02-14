@@ -32,9 +32,6 @@ void setup() {
 }
 
 void loop() {
-  rampToPWM(170);
-  delay(5000);
-  switchDirection();
 }
 
 /*
@@ -44,9 +41,9 @@ void getPeriod() {
   tOld = tNew;
   tNew = micros();
   T = (tNew - tOld);
-  speed = (1E6) / (28 * T) ;
+  speed = (1.2446)*(1E6) / (28 * T) ;
   if (speed < 100) {
-    //Serial.println(speed, 3);
+    Serial.println(speed, 3);
   }
 }
 
@@ -79,15 +76,15 @@ void rampToPWM(float newPWM) {
    Switches direction of motor
 */
 void switchDirection() {
-  Serial.println("entered method");
+ // Serial.println("entered method");
   if (forward) {
     digitalWrite(reverse_pin, LOW); //when low the motor goes reverse
     forward = false;
-    Serial.println("set to reverse");
+    //Serial.println("set to reverse");
   } else {
     digitalWrite(reverse_pin, HIGH); //when high the motor goes forward
     forward = true;
-    Serial.println("set to forward");
+   // Serial.println("set to forward");
   }
 }
 
