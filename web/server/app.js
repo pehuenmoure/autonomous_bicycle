@@ -19,7 +19,6 @@ var prompt = require('prompt');
 prompt.start();
 
 
-
 //======================rest of code=======================
 app.set('view engine', 'ejs');
 
@@ -36,23 +35,49 @@ SerialPort.list(function (err, ports) {
 				parser: SerialPort.parsers.readline('\n')
 			});
 
+
 			io.on('connect', function(socket){
 				console.log('a user connected');
 			});
+			setPrompt();
 
-			var data = Array(6);
+			var data = createArray(1000,4);
 			var i = 0;
 			myPort.on('data', function(d){
-				if (i == 4) {
-					console.log(data);
-					io.emit('data-msg', data);
-					i = 0;
-				} else{
-					data[i] = parseFloat(d);
-					i ++;
+				var reading = parseFloat(d);
+
+				console.log('reading:',reading);
+				if(reading<10000){
+					data[row][Math.floor(Math.trunc(reading)/1000)-1] = reading%1000;
+					console.log('row',row,data[row]);
+				}
+				else {
+					row++;
 				}
 			});
-			setPrompt();
+			//=======================FOR WRITING TO FILE======================
+			function writeToFile(){
+				row=0;
+ 	 			//Set up new file
+  				fileName = name.concat(String(testNo)).concat('.csv');
+  				var workbook = fileWriter.createWorkbook('./', fileName);
+  				var sheet = workbook.createSheet('sheet1',6,1000);
+  				sheet.set(1,1,'potato');
+  				for(var i = 0;i<data.length;i++){
+  					for(var j = 0;j<data[i].length;j++){
+  						console.log(j+1);
+  						console.log(i+1);
+  						console.log(data[i][j]);
+  						sheet.set(j+1,i+1,data[i][j]);
+  					}
+  				}
+
+  				workbook.save(function(ok){
+  					if (!ok) 
+  						workbook.cancel();
+  					});
+
+  				}
 			//=========================FOR INPUTTING DATA TO ARDUINO====================
 			function setPrompt(){
 				prompt.get(['input'], function (err, result) {
@@ -63,7 +88,10 @@ SerialPort.list(function (err, ports) {
 						myPort.write('y');
 						setPrompt();
 					}else if(result.input==='stop'){
+						writeToFile();
+						//stop loop and increment testNo
 						myPort.write('n');
+						testNo++;
 						setPrompt();
 					}
 				});
@@ -80,30 +108,22 @@ SerialPort.list(function (err, ports) {
 });
 
 
-//========================FOR WRITING .CSV FILES=========================
-// Create a new workbook file in current working-path 
-var workbook = fileWriter.createWorkbook('./', fileName);
-
-  // Create a new worksheet with 10 columns and 12 rows 
-  var sheet1 = workbook.createSheet('sheet1', 10, 12);
-  
-  // Fill some data 
-  sheet1.set(1, 1, 'I am title');
-  for (var i = 2; i < 5; i++)
-  	sheet1.set(i, 1, 'test'+i);
-  
-  // Save it 
-  workbook.save(function(ok){
-  	if (!ok) 
-  		workbook.cancel();
-  	else
-  		console.log('congratulations, your workbook created');
-  });
-
 
 
 
   //========================================================================
+
+  function createArray(length) {
+  	var arr = new Array(length || 0),
+  	i = length;
+
+  	if (arguments.length > 1) {
+  		var args = Array.prototype.slice.call(arguments, 1);
+  		while(i--) arr[length-1 - i] = createArray.apply(this, args);
+  	}
+
+  	return arr;
+  }
 
   
   function writeAndDrain (data, callback) {
