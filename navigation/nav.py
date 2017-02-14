@@ -154,7 +154,7 @@ class Nav(object):
 
 	def direction_to_turn(self):
 		self.target_path = self.find_closest_path()
-		distance = self.distance_from_path()
+		distance = np.abs(self.distance_from_path())
 		delta = np.abs(self.displacement_to_turn())
 		if delta<distance:
 			return self.turn_perp()
@@ -239,14 +239,14 @@ class Bike(object):
 
 if __name__ == '__main__':
 	import simulator
-	new_bike = Bike((5,2), np.radians(90), .02)
+	new_bike = Bike((5,8), np.radians(0), .02)
 	new_map = Map_Model(new_bike, [[],[]], [])
-	new_map.draw_circle(center = (7,7), r = 5, n_points = 10, degrees = np.pi/4)
+	'''new_map.draw_circle(center = (7,7), r = 5, n_points = 10, degrees = np.pi/4)
 	new_map.add_point((10,15))
 	new_map.add_point((15,15))
 	new_map.add_point((18,11))
-	new_map.close_path()
-	#new_map.add_path((0,1),(10,1))
+	new_map.close_path()'''
+	new_map.add_path((0,9),(10,9))
 	new_nav = Nav(new_map)
 	sim = simulator.Simulator(new_map, new_nav)
 	sim.run()
