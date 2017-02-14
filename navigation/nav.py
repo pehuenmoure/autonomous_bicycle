@@ -155,29 +155,11 @@ class Nav(object):
 	def direction_to_turn(self):
 		self.target_path = self.find_closest_path()
 		distance = self.distance_from_path()
-		sign = self._sign(self.distance_from_path())
-		distance = np.abs(distance)
-		p = self.map_model.get_path_vector(self.target_path)
-		b = self.map_model.bike.vector
-		r = self.map_model.bike.turning_r
 		delta = np.abs(self.displacement_to_turn())
-		if distance>r:
+		if delta<distance:
 			return self.turn_perp()
 		else:
-			if np.abs(np.sum(p*b))<.01:
-					return self.turn_parallel()
-
-			elif np.sum(p*b)<0:  #outside 90 degrees of path direction
-				return self.turn_perp()
-			else:
-				p_perp = np.array([-p[1], p[0]])*sign
-				if np.sum(p_perp*b)>0: #facing away from path
-					return self.turn_perp()
-				else:
-					if delta<distance:
-						return self.turn_perp()
-					else:
-						return self.turn_parallel()
+			return self.turn_parallel()
 
 
 	def displacement_to_turn(self, b = None, target_path = None):
@@ -257,17 +239,14 @@ class Bike(object):
 
 if __name__ == '__main__':
 	import simulator
-	new_bike = Bike((5,2), np.radians(-10), .02)
+	new_bike = Bike((5,2), np.radians(90), .02)
 	new_map = Map_Model(new_bike, [[],[]], [])
-	#new_map.add_path((1,1), (8,1))
-	#new_map.add_point((10,8))
-	#new_map.add_point((1,8))
-	#new_map.add_point((1,1))
-	new_map.draw_circle((7,7), 5, 10, np.pi/4)
+	new_map.draw_circle(center = (7,7), r = 5, n_points = 10, degrees = np.pi/4)
 	new_map.add_point((10,15))
 	new_map.add_point((15,15))
 	new_map.add_point((18,11))
 	new_map.close_path()
+	#new_map.add_path((0,1),(10,1))
 	new_nav = Nav(new_map)
 	sim = simulator.Simulator(new_map, new_nav)
 	sim.run()
