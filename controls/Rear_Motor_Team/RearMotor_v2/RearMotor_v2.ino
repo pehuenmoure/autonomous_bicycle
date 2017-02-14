@@ -41,7 +41,7 @@ void getPeriod() {
   tOld = tNew;
   tNew = micros();
   T = (tNew - tOld);
-  speed = (1E6) / (28 * T) ;
+  speed = (1.2446)*(1E6) / (28 * T) ;
   if (speed < 100) {
     Serial.println(speed, 3);
   }
