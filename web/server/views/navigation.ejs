@@ -135,20 +135,21 @@
             if (waypoints.length>1){
               directionsDisplay.setDirections(response);
             var route = response.routes[0];
-            globalRoute = route;
             getRoutePoints(route);
             }
 
           } else {
+            // write new error message
             window.alert('Directions request failed due to ' + status);
           }
         });
         
       }
-    var globalRoute = 0
+
     function getRoutePoints(route){
       var legs = route.legs
       console.log(route.overview_polyline)
+      console.log("path:")
       for(var i = 0; i < route.overview_path.length; i++){
         console.log(route.overview_path[i].toString())
       }
