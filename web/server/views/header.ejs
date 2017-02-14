@@ -6,7 +6,6 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <link href="stylesheets/style.css" rel="stylesheet">
     <nav class="navbar navbar-default" role="navigation">
     <div class="container-fluid">
 <style>
@@ -25,41 +24,10 @@
             <li><a href="/graph">Graph</a></li>
             <li><a href="/navigation">Navigation</a></li>
         </ul>
-      
-    </div>
+      </div>
 </nav>
   </head>
   <body>
-    <div id="map"></div>
-    <script>
-      var waypoints = []
-      function initMap() {
-        var uluru = {lat: -25.363, lng: 131.044};
-        var map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 17,
-          center: new google.maps.LatLng(42.449082, -76.484529)
-        });
-        var marker = new google.maps.Marker({
-          position: new google.maps.LatLng(42.449082, -76.484529),
-          map: map
-        });
-
-        map.addListener('click', function(e) {
-          placeMarker(e.latLng, map);
-          waypoints.push(e.latLng)
-          console.log(waypoints)
-         });
-      }
-
-      function placeMarker(latLng, map) {
-        var marker = new google.maps.Marker({
-          position: latLng,
-          map: map
-        });
-      }
-    </script>
-    <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA1sQ8YT-4yGVDG0SRFhlwjHHGmhsXTIxI&callback=initMap">
-    </script>
+    
   </body>
 </html> 
