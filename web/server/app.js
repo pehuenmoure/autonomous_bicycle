@@ -6,10 +6,10 @@ var io = require('socket.io')(server);
 var SerialPort = require('serialport');
 
 app.set('view engine', 'ejs');
-
+app.set('port', 8080)
 if(!process.argv[2]){
-	console.error("Usage: Node " + process.argv[1] + " serialport needed");
-	process.exit(1);
+	//console.error("Usage: Node " + process.argv[1] + " serialport needed");
+	//process.exit(1);
 };
 
 var port = new SerialPort(process.argv[2], {
