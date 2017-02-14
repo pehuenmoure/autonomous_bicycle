@@ -5,20 +5,28 @@
     <title>layout</title>
     <meta name="description" content="">
     <meta name="author" content="">
+
     <h1>navigation</h1>
     <button type="button" class="btn btn-warning" onclick="deleteMarkers()">Delete markers</button>
+    <button type="button" class="btn btn-info" onclick="showRoute(directionsService, directionsDisplay)">Route</button>
+      <label>
+      <input id="toggle-autoroute" type="checkbox" data-toggle="toggle">
+      Auto Route </label>
+
   </head>
   <body>
     <div id="map"></div>
     <script>
       // google.maps.Marker array
       var waypoints = []
-      
+
+      var directionsDisplay;
+      var directionsService;
+
       function initMap() {
         //directions views
-        var directionsDisplay = new google.maps.DirectionsRenderer;
-        var directionsService = new google.maps.DirectionsService;
-
+        directionsDisplay = new google.maps.DirectionsRenderer;
+        directionsService = new google.maps.DirectionsService;
         var artsQuad = new google.maps.LatLng(42.449082, -76.484529)
         var map = new google.maps.Map(document.getElementById('map'), {
           zoom: 17,
@@ -30,15 +38,26 @@
         map.addListener('click', function(e) {
           var newMarker = placeMarker(e.latLng, map);
           waypoints.push(newMarker);
-          logGPS(waypoints);
-          if(waypoints.length>1){calculateAndDisplayRoute(directionsService, directionsDisplay);
-              for (var i = 0; i < waypoints.length; i++) {
-          waypoints[i].setMap(null);
-        }
+          //logGPS(waypoints);
+          var checkedValue = document.getElementById('toggle-autoroute').checked;
+          if(checkedValue){
+            showRoute(directionsService, directionsDisplay);
+          }
+          else{
+            displayAllMarkers(map, directionsDisplay)
+            //need to remove route when autoroute if off directionsDisplay.setMap(null);
           }
          });
+      }
 
-        //
+      function showRoute(directionsService, directionsDisplay){
+        if(waypoints.length>1){
+            calculateAndDisplayRoute(directionsService, directionsDisplay);
+            for (var i = 0; i < waypoints.length; i++) {
+              waypoints[i].setMap(null);
+            }
+          }
+
       }
 
       function placeMarker(latLng, map) {
@@ -78,9 +97,6 @@
         directionsService.route({
           origin: {lat: way1.lat(), lng: way1.lng()},  
           destination: {lat: way2.lat(), lng: way2.lng()},  
-          // Note that Javascript allows us to access the constant
-          // using square brackets and a string value as its
-          // "property."
           travelMode: google.maps.TravelMode[selectedMode]
         }, function(response, status) {
           if (status == 'OK') {
@@ -91,6 +107,11 @@
         });
       }
 
+      function displayAllMarkers(map, directionsDisplay){
+        for (var i = 0; i < waypoints.length; i++) {
+          waypoints[i].setMap(map);
+        }
+      }
 
       function calculateAndDisplayRoute(directionsService, directionsDisplay) {
           var wpts = []
@@ -101,7 +122,6 @@
         if(waypoints.length < 3){
           directionsDisplay.setOptions({ preserveViewport: true });
         }
-
         directionsService.route({
           origin: waypoints[0].getPosition(),
           destination: waypoints[waypoints.length-1].getPosition(),
@@ -115,17 +135,33 @@
             if (waypoints.length>1){
               directionsDisplay.setDirections(response);
             var route = response.routes[0];
-            globalRoute = route
+            globalRoute = route;
+            getRoutePoints(route);
             }
 
           } else {
             window.alert('Directions request failed due to ' + status);
           }
         });
+        
       }
     var globalRoute = 0
     function getRoutePoints(route){
+      var legs = route.legs
+      console.log(route.overview_polyline)
+      for(var i = 0; i < route.overview_path.length; i++){
+        console.log(route.overview_path[i].toString())
+      }
       
+      /*for(var i = 0; i < legs.length; i++){
+        steps=legs[i].steps;
+        while(steps.length!=0){
+          for(var i = 0; i < steps.length; i++){
+            step=steps[i]
+          }
+        }
+
+      }*/
     }
 
     </script>
