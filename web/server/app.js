@@ -50,6 +50,7 @@ myPort.on('data', function(d){
 		row++;
 	}
 });
+
 //=======================FOR WRITING TO FILE======================
 function writeToFile(){
 	row=0;
