@@ -21,19 +21,19 @@ void getPeriod() {
 */
 void rampToPWM(float newPWM) {
 
-  while (pwm < newPWM) { //Ramps up speed- Workaround for rear motor safety features
-    if (newPWM - pwm < 10)
+  while (rear_pwm < newPWM) { //Ramps up speed- Workaround for rear motor safety features
+    if (newPWM - rear_pwm < 10)
       pwm += newPWM - pwm;
     else
       pwm += 10;
-    analogWrite(pwm_rear, pwm);
+    analogWrite(pwm_rear, rear_pwm);
   }
-  while (pwm > newPWM) {
-    if (pwm - newPWM < 10)
-      pwm -= pwm - newPWM;
+  while (rear_pwm > newPWM) {
+    if (rear_pwm - newPWM < 10)
+      rear_pwm -= rear_pwm - newPWM;
     else
       pwm -= 10;
-    analogWrite(pwm_rear, pwm);
+    analogWrite(pwm_rear, rear_pwm);
   }
 }
 

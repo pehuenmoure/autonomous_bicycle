@@ -1,5 +1,6 @@
 #include "IMU.h"
 #include "PID.h"
+#include "RearMotor.h"
 #include <math.h>
 
 /*Define definite variables*/
@@ -14,7 +15,7 @@ int steer_dir = 0;
 #define reverse_pin 50 //to change direction of rear motor
 
 //Rear Motor Variables
-float pwm = 0; //current pwm value
+float rear_pwm = 0; //current pwm value
 double speed = 0; //speed in rev/s
 boolean forward = true; //if False, is running in reverse
 //Variables for calculating rear motor speed
