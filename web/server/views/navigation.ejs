@@ -7,7 +7,7 @@
     <meta name="author" content="">
 
     <h1>navigation</h1>
-    <button type="button" class="btn btn-warning" onclick="deleteMarkers()">Delete markers</button>
+    <button type="button" class="btn btn-warning" onclick="reset()">Reset</button>
     <button type="button" class="btn btn-info" onclick="showRoute(directionsService, directionsDisplay)">Route</button>
       <label>
       <input id="toggle-autoroute" type="checkbox" data-toggle="toggle">
@@ -22,13 +22,14 @@
 
       var directionsDisplay;
       var directionsService;
+      var map;
 
       function initMap() {
         //directions views
         directionsDisplay = new google.maps.DirectionsRenderer;
         directionsService = new google.maps.DirectionsService;
         var artsQuad = new google.maps.LatLng(42.449082, -76.484529)
-        var map = new google.maps.Map(document.getElementById('map'), {
+        map = new google.maps.Map(document.getElementById('map'), {
           zoom: 17,
           center: artsQuad
         });
@@ -71,12 +72,18 @@
         return marker
       }
 
-      function deleteMarkers(){
+      function reset(){
         for (var i = 0; i < waypoints.length; i++) {
           waypoints[i].setMap(null);
         }
         // clear array
         waypoints = [];
+        
+        if(directionsDisplay != null) {
+          directionsDisplay.setMap(null);
+          directionsDisplay = new google.maps.DirectionsRenderer;
+          directionsDisplay.setMap(map);
+        }
       }
 
       // test waypoints array
@@ -146,14 +153,27 @@
         
       }
 
+    // returns JSON of each points along the route
     function getRoutePoints(route){
+      var points = []
+      var pointsJSON = {
+        points: []
+      };
       var legs = route.legs
+      // string encoding of route
       console.log(route.overview_polyline)
       console.log("path:")
       for(var i = 0; i < route.overview_path.length; i++){
-        console.log(route.overview_path[i].toString())
+        var point = route.overview_path[i]
+        var pointArr = [point.lat(), point.lng()]
+        points.push(pointArr)
+        pointsJSON.points.push({
+          "lat": point.lat(),
+          "lng": point.lng()
+        }) 
       }
-      
+      console.log(JSON.stringify(pointsJSON));
+      return pointsJSON
       /*for(var i = 0; i < legs.length; i++){
         steps=legs[i].steps;
         while(steps.length!=0){
@@ -161,9 +181,9 @@
             step=steps[i]
           }
         }
-
       }*/
     }
+
 
     </script>
 
