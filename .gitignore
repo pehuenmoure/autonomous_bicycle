@@ -1,0 +1,4 @@
+*.pyc
+
+web/server/node_modules
+
