@@ -9,7 +9,19 @@
 int steer_dir = 0;  
 
 //Rear Motor
-#define PWM_rear 8
+#define PWM_rear 8  //rear motor PWM pin
+#define hall_pin 11 //hall sensor pulse 
+#define reverse_pin 50 //to change direction of rear motor
+
+//Rear Motor Variables
+float pwm = 0; //current pwm value
+double speed = 0; //speed in rev/s
+boolean forward = true; //if False, is running in reverse
+//Variables for calculating rear motor speed
+float tOld = 0; //first time reading
+float tNew = 0; //second time reading
+double T = 0;
+
 
 //Timed Loop Variables
 const long interval = 10000;
