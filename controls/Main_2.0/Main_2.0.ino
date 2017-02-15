@@ -342,7 +342,8 @@ void loop() {
     float encoder_position = updateEncoderPosition(); //output is current position wrt front zero
     roll_t imu_data = updateIMUData();
     //Serial.println(String(imu_data.angle) + '\t' + String(encoder_position)) ;
-    float desiredVelocity = balanceController(((-1)*(imu_data.angle +.24)),(-1)*imu_data.rate, encoder_position);//NEED TO UPDATE ROLL ANGLE AND RATE SET TO NEGATIVE TO MATCH SIGN CONVENTION BETWEEN BALANCE CONTROLLER AND 
+    float desiredVelocity = balanceController(((-1)*(imu_data.angle)),(-1)*imu_data.rate, encoder_position);//NEED TO UPDATE ROLL ANGLE AND RATE SET TO NEGATIVE TO MATCH SIGN CONVENTION BETWEEN BALANCE CONTROLLER AND 
+    //Serial.println(String(encoder_position));
     frontWheelControl(desiredVelocity, encoder_position);  //DESIRED VELOCITY SET TO NEGATIVE TO MATCH SIGN CONVENTION BETWEEN BALANCE CONTROLLER AND 
 
     Serial.write(imu_data.angle);
