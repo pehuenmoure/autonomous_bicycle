@@ -172,6 +172,14 @@ void setup() {
   pinMode(RC_CH5, INPUT);
   pinMode(RC_CH6, INPUT);
 
+  //setup Rear Motor 
+  pinMode(hall_pin, INPUT);
+  pinMode(PWM_rear, OUTPUT);
+  pinMode(reverse_pin, OUTPUT);
+  digitalWrite(reverse_pin, HIGH); //when high the motor goes forward
+  float voltage = analogRead(63) / 14.2 * pwm / 180;
+  analogWrite(PWM_rear, pwm);
+  attachInterrupt(digitalPinToInterrupt(hall_pin), getPeriod, RISING); //Interrupt
   
   landingGearDown() ;
   
