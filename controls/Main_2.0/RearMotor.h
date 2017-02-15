@@ -6,7 +6,7 @@
 
 /*Define functions*/
 //get speed
-void getPeriod();
+void getPeriod(float tNew);
 //set speed
 void rampToPWM(float);
 //change direction

@@ -3,11 +3,11 @@
 /*
    Method that sets value "speed" to current speed in rev/s
 */
-void getPeriod() {
-  tOld = tNew;
+void getPeriod(float tNew) {
+  float tOld = tNew;
   tNew = micros();
-  T = (tNew - tOld);
-  speed = (1.2446)*(1E6) / (28 * T) ;
+  double T = (tNew - tOld);
+  double speed = (1.2446)*(1E6) / (28 * T) ;
   if (speed < 100) {
     Serial.println(speed, 3);
   }
