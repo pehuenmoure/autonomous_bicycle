@@ -5,12 +5,13 @@
   <script src="/socket.io/socket.io.js"></script>
   <!-- <script type="text/javascript" src="assets/script/canvasjs.min.js"></script> -->
   <script src="http://canvasjs.com/assets/script/canvasjs.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <title>Index</title>
 
    <style>
       body { font: 13px Helvetica, Arial; }
     table {
-        font-family: arial, sans-serif;
+        /*font-family: arial, sans-serif;*/
         border-collapse: collapse;
         width: 50%;}
 
@@ -26,8 +27,9 @@
 
 <body>
   <h1>Autonomous Bicycle Team</h1>
-
+  <br>
   <div id="chartContainer" style="height: 300px; width:100%;"></div>
+  <br>
   <table align = "center" id = data></table>
 
   <script type="text/javascript">
@@ -38,13 +40,13 @@
     var data = [d0, d1, d2, d3]; // dataPoints
 
     var chart = new CanvasJS.Chart("chartContainer",{
-      backgroundColor: "#F5DEB3",
+      backgroundColor: "#d9d9d9",
       title :{
         text: "Live Data"
       },      
       data: [{
         type: "line",
-        dataPoints: d0 
+        dataPoints: data[0] 
       },{
         type: "line",
         dataPoints: data[1] 

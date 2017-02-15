@@ -90,8 +90,10 @@ class Simulator(object):
 
 	def run(self):
 		anim = animation.FuncAnimation(self.fig, self.update_bike,  
-                                frames=360, 
+                                frames=5000, 
                                 interval=10)
+		anim.save('nav_anim.mp4')
+		print("Finished saving")
 		plt.show()
 
 	def update_bike(self, i):
