@@ -311,7 +311,7 @@ void setup()
 
     //setup Rear Motor 
   pinMode(hall_pin, INPUT);
-  pinMode(PWM_rear, OUTPUT);
+  //pinMode(PWM_rear, OUTPUT);
   pinMode(reverse_pin, OUTPUT);
   digitalWrite(reverse_pin, HIGH); //when high the motor goes forward
   float voltage = analogRead(63) / 14.2 * pwm / 180;
@@ -389,6 +389,8 @@ void setup()
 //    }
 //    
 //  }
+  rampToPWM(rear_pwm, 170);
+
 }
 
 
