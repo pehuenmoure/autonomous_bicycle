@@ -25,10 +25,12 @@
     </style>
 </head>
 
-<body>
+<body class="container">
   <h1>Autonomous Bicycle Team</h1>
   <br>
   <div id="chartContainer" style="height: 300px; width:100%;"></div>
+  <br>
+  <button type="button" class="btn btn-warning"onclick="downloadData()">Download</button>
   <br>
   <table align = "center" id = data></table>
 
@@ -83,10 +85,19 @@
 
     var socket = io();
 
-    socket.on('data-msg', function(d){
-      //console.log("data recieved - server side");
+    function downloadData(){
+      console.log('doanloading data')
+      socket.emit('download')
+    }
+
+    socket.on('data', function(d){
+      console.log("data recieved");
       $('#data').prepend('<tr>' + format(d) + '</tr>');
       updateChart(d);
+    });
+
+    socket.on('file_made', function(){
+
     });
 
     function format(array){

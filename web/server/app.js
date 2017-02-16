@@ -22,27 +22,32 @@ var port = new SerialPort(process.argv[2], {
 	parser: SerialPort.parsers.readline('\n')
 });
 
-io.on('connect', function(socket){
-	console.log('a user connected');
-});
-
 var data = new Array(1);
 var row = new Array(4);
 
 port.on('data', function(d){
-
-	console.log(d);
+	// console.log(d);
 	var col = Math.floor(Math.trunc(d)/1000);
 	row[col-1] = d-(col*1000);
-	if(col == 4)
-		{
-			data.push(row);
-			console.log(row);
-		}
+	if(col == 4){
+		data.push(row);
+		console.log(row);
+		io.emit('data', row);
+	}
+});
+
+io.on('connect', function(socket){
+	console.log('a user connected');
+
+	socket.on('download', function(){
+		console.log("Downloading data");
+		new_data = dataToString(data);
+		createCSVFile(new_data, "data");
+	});
 });
 
 app.get('/', function(req, res){
-	res.render('index');
+	res.render('graph');
 });
 
 server.listen(8000, function(){
@@ -85,10 +90,6 @@ function downloadCSV(args, csvdata) {
 	}
 	data = encodeURI(csv);
 
-	link = document.createElement('a');
-	link.setAttribute('href', data);
-	link.setAttribute('download', filename);
-	link.click();
 }
 
 function test(){
