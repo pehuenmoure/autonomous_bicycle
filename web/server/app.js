@@ -47,12 +47,23 @@ io.on('connect', function(socket){
 });
 
 app.get('/', function(req, res){
-	res.render('graph');
+	// first page
+	res.render('index');
 });
 
 server.listen(8000, function(){
 	console.log('listening on 8000');
 });
+
+app.get('/graph', (req, res) => {
+    res.render('graph');
+   });
+app.get('/navigation', (req, res) => {
+    res.render('navigation');
+   });
+app.get('/index', (req, res) => {
+    res.render('index');
+   });
 
 //=======================FOR WRITING TO FILE======================
 function dataToString(rawdata){

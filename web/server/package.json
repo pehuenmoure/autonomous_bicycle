@@ -1,5 +1,5 @@
 {
-  "name": "test1",
+  "name": "server",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -17,7 +17,7 @@
     "morgan": "~1.5.3",
     "msexcel-builder": "0.0.2",
     "multer": "^1.3.0",
-    "prompt": "^4.1.2",
+    "prompt": "",
     "serialport": "^4.0.7",
     "serve-favicon": "~2.2.1",
     "socket.io": "^1.7.2"

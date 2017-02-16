@@ -1,6 +1,7 @@
 <!DOCTYPE html>  
 <html lang="en">  
   <head>
+  <% include ../views/header %>
     <meta charset="utf-8">
     <title>layout</title>
     <meta name="description" content="">
@@ -13,6 +14,12 @@
       <input id="toggle-autoroute" type="checkbox" data-toggle="toggle">
       Auto Route </label>
 
+<style>
+       #map {
+        height: 400px;
+        width: 100%;
+       }
+</style>
   </head>
   <body>
     <div id="map"></div>

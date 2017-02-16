@@ -1,37 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
+<% include ../views/header %>
   <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <!-- <script type="text/javascript" src="assets/script/canvasjs.min.js"></script> -->
   <script src="http://canvasjs.com/assets/script/canvasjs.min.js"></script>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <title>Index</title>
 
-   <style>
-      body { font: 13px Helvetica, Arial; }
-    table {
-        /*font-family: arial, sans-serif;*/
-        border-collapse: collapse;
-        width: 50%;}
-
-    td, th {
-        border: 1px solid #dddddd;
-        text-align: center;
-        width: 6px;}
-
-    tr:nth-child(even) {
-      background-color: #dddddd;}
-    </style>
 </head>
 
-<body class="container">
+<body>
   <h1>Autonomous Bicycle Team</h1>
-  <br>
+
   <div id="chartContainer" style="height: 300px; width:100%;"></div>
-  <br>
-  <button type="button" class="btn btn-warning"onclick="downloadData()">Download</button>
-  <br>
   <table align = "center" id = data></table>
 
   <script type="text/javascript">
@@ -42,13 +24,13 @@
     var data = [d0, d1, d2, d3]; // dataPoints
 
     var chart = new CanvasJS.Chart("chartContainer",{
-      backgroundColor: "#d9d9d9",
+      backgroundColor: "#F5DEB3",
       title :{
         text: "Live Data"
       },      
       data: [{
         type: "line",
-        dataPoints: data[0] 
+        dataPoints: d0 
       },{
         type: "line",
         dataPoints: data[1] 
@@ -66,7 +48,7 @@
     var dataLength = 50; // number of dataPoints visible at any point
 
     var updateChart = function (newData) {
-      for (var j = 0; j < 4; j++) { 
+      for (var j = 0; j < st4; j++) { 
         data[j].push({
           x: xVal,
           y: newData[j]
@@ -85,19 +67,10 @@
 
     var socket = io();
 
-    function downloadData(){
-      console.log('doanloading data')
-      socket.emit('download')
-    }
-
-    socket.on('data', function(d){
-      console.log("data recieved");
+    socket.on('data-msg', function(d){
+      //console.log("data recieved - server side");
       $('#data').prepend('<tr>' + format(d) + '</tr>');
       updateChart(d);
-    });
-
-    socket.on('file_made', function(){
-
     });
 
     function format(array){

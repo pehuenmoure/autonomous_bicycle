@@ -1,13 +1,15 @@
 <html lang="en">
 <head>
+  <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <!-- <script type="text/javascript" src="assets/script/canvasjs.min.js"></script> -->
+  <script src="http://canvasjs.com/assets/script/canvasjs.min.js"></script>
     <% include ../views/header %>
 </head>
 <body class="container">
     <main>
-        <% include ../views/graph %>
-        <% include ../views/navigation %>
+        <% include ../views/graph.ejs %>
+        <% include ../views/navigation.ejs %>
     </main>
-
-    
 </body>
 </html>
