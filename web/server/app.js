@@ -6,12 +6,12 @@ var io = require('socket.io')(server);
 var SerialPort = require('serialport');
 var fs = require('fs');
 //For getting input- Will be edited out once site is nicer
-var prompt = require('prompt');
-prompt.start();
+//var prompt = require('prompt');
+//prompt.start();
 
 app.set('view engine', 'ejs');
 
-setPrompt();
+//setPrompt();
 
 if(!process.argv[2]){
 	console.error("Usage: Node " + process.argv[1] + " serialport needed");
