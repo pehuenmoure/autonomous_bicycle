@@ -1,5 +1,6 @@
 #include "IMU.h"
 #include "PID.h"
+#include "RearMotor.h"
 #include <math.h>
 
 /*Define definite variables*/
@@ -9,7 +10,18 @@
 int steer_dir = 0;  
 
 //Rear Motor
-#define PWM_rear 8
+#define PWM_rear 8  //rear motor PWM pin
+#define hall_pin 11 //hall sensor pulse 
+#define reverse_pin 50 //to change direction of rear motor
+
+//Rear Motor Variables
+float rear_pwm = 0; //current pwm value
+double speed = 0; //speed in rev/s
+boolean forward = true; //if False, is running in reverse
+//Variables for calculating rear motor speed
+float tOld = 0; //first time reading
+float tNew = 0; //second time reading
+double T = 0;
 
 //Timed Loop Variables
 const long interval = 10000;
@@ -295,7 +307,16 @@ void setup()
   pinMode(RC_CH5, INPUT);
   pinMode(RC_CH6, INPUT);
 
-  
+
+
+    //setup Rear Motor 
+  pinMode(hall_pin, INPUT);
+  pinMode(PWM_rear, OUTPUT);
+  pinMode(reverse_pin, OUTPUT);
+  digitalWrite(reverse_pin, HIGH); //when high the motor goes forward
+  float voltage = analogRead(63) / 14.2 * pwm / 180;
+  analogWrite(PWM_rear, pwm);
+  attachInterrupt(digitalPinToInterrupt(hall_pin), getPeriod, RISING); //Interrupt
  
 
   // initializes pins for the landing gear relay switch
@@ -513,4 +534,17 @@ void loop() {
 //      while(true){}
     //}
       }
+      /*
+   Method that sets value "speed" to current speed in m/s
+*/
+
+}
+  void getPeriod() {
+    float tOld = tNew;
+    tNew = micros();
+    double T = (tNew - tOld);
+    double speed = (1.2446)*(1E6) / (28 * T) ;
+    if (speed < 100) {
+      Serial.println(speed, 3);
+    }
 }
