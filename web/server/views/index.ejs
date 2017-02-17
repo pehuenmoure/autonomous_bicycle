@@ -5,11 +5,33 @@
   <!-- <script type="text/javascript" src="assets/script/canvasjs.min.js"></script> -->
   <script src="http://canvasjs.com/assets/script/canvasjs.min.js"></script>
     <% include ../views/header %>
+    
 </head>
 <body class="container">
-    <main>
-        <% include ../views/graph.ejs %>
-        <% include ../views/navigation.ejs %>
-    </main>
+    <div id = "body">
+
+        
+    </div>
+<script>
+$(document).ready(function(){
+    var $result = $('#body'); 
+    $result.load('/about');
+    $('#nav .nav li #graph').click(function() {
+       $result.load('/graph');
+    });
+    $('#nav .nav li #navigation').click(function() {
+       $result.load('/navigation');
+    });
+    $('#nav .nav li #about').click(function() {
+       $result.load('/about');
+    });
+    $('#nav .nav li #team').click(function() {
+       $result.load('/team');
+    });
+    $('#nav .nav li #subteams').click(function() {
+       $result.load('/subteams');
+    });
+  });
+</script>
 </body>
 </html>

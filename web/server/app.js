@@ -64,6 +64,15 @@ app.get('/navigation', (req, res) => {
 app.get('/index', (req, res) => {
     res.render('index');
    });
+app.get('/about', (req, res) => {
+    res.render('about');
+   });
+app.get('/team', (req, res) => {
+    res.render('team');
+   });
+app.get('/subteams', (req, res) => {
+    res.render('subteams');
+   });
 
 //=======================FOR WRITING TO FILE======================
 function dataToString(rawdata){
