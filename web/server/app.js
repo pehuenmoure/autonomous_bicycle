@@ -1,5 +1,6 @@
 var express = require('express');
 var app = express();
+var path = require('path');
 var http = require('http');
 var server = http.Server(app);
 var io = require('socket.io')(server);
@@ -12,6 +13,7 @@ var fs = require('fs');
 app.set('view engine', 'ejs');
 
 //setPrompt();
+app.use(express.static(path.join(__dirname, 'public')));
 
 if(!process.argv[2]){
 	console.error("Usage: Node " + process.argv[1] + " serialport needed");
@@ -50,6 +52,7 @@ app.get('/', function(req, res){
 	// first page
 	res.render('index');
 });
+//app.use(express.static());
 
 server.listen(8000, function(){
 	console.log('listening on 8000');
@@ -72,6 +75,9 @@ app.get('/team', (req, res) => {
    });
 app.get('/subteams', (req, res) => {
     res.render('subteams');
+   });
+app.get('/home', (req, res) => {
+    res.render('home');
    });
 
 //=======================FOR WRITING TO FILE======================

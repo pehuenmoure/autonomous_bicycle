@@ -3,16 +3,86 @@
   <head>
     <meta charset="utf-8">
     <title>About</title>
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans" />
 <h1> Will fill page once I get team member profiles </h1>
+<style>
+
+.avatar{
+  object-fit: cover;
+  width: 200px;
+  height:200px;
+  z-index:0;
+  display: block;
+}
+.wheel{
+  z-index:1;
+  top:0;
+  left: 10;
+  position: absolute;
+  display: block;
+}
+.member {
+    padding: 25px;
+    position: relative;
+}
+p {
+  font-family: Avenir;
+}
+b {
+  font-weight: bolder;
+  font-size: 16;
+}
+h2 {
+    margin-top: 0;
+}
+
+.shadow {
+  border-radius: 10px;
+  -webkit-box-shadow: 1px 1px 2px 3px #e6e6e6;  /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
+  -moz-box-shadow:    1px 1px 2px 3px #e6e6e6;  /* Firefox 3.5 - 3.6 */
+  box-shadow:         1px 1px 2px 3px #e6e6e6;  /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
+}
+
+</style>
+
+<script>
+//http://stackoverflow.com/questions/19097437/how-to-rotate-an-html-element-with-jquery-on-scroll-percentage
+  $(document).ready(function(){
+   var bodyHeight = $("body").height()-$(window).height();
+   window.onscroll = function() {
+      //Determine the amount to rotate by.
+      var factor = 4;
+      var deg = -window.scrollY*(360/bodyHeight)/factor;
+
+      $(".wheel").css({
+        "transform": "rotate("+deg+"deg)",
+      });
+
+   };
+});
+
+</script>
   </head>
   <body>
-  <div class="profiles">
+    
     <div id="kaf22">
       Kyle Fenske
     </div>
-    <div id="rb696">
-      Rohit Bandaru
+
+    <div class="member row shadow" id="rb696">
+      <div class="col-sm-5">
+        <img src="/images/rb696_289.jpg" class="img-responsive img-circle avatar">
+        <img src="/images/bikewheel.png" class="img-responsive img-circle wheel">
+      </div>
+      <div class="col-sm-7">
+        <h2>Rohit Bandaru</h2>
+        <p><b>Major: </b>Electrical and Computer Engineering</p>
+        <p><b>Year: </b>Sophomore '19</p>
+        <p>I am a sophomore who enjoys using innovative technologies for different applications. I primarily work with the web team and developed this website! I am also a member of Cornell iGEM.</p>
+      </div>
     </div>
+
+    
     <div id="dem292">
       Dylan Meehan
     </div>
@@ -55,6 +125,6 @@
     <div id="ad765">
       Anshuman Das
     </div>
-  </div>
+
   </body>
 </html> 

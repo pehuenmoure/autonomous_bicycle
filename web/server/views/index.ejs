@@ -1,37 +1,76 @@
 <html lang="en">
 <head>
-  <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
   <script src="/socket.io/socket.io.js"></script>
-  <!-- <script type="text/javascript" src="assets/script/canvasjs.min.js"></script> -->
   <script src="http://canvasjs.com/assets/script/canvasjs.min.js"></script>
-    <% include ../views/header %>
+  
+  <!--Bootstrap + JQuery-->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />        
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>   
+  <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+  <% include ../views/header %>
     
 </head>
-<body class="container">
-    <div id = "body">
 
-        
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-1"></div>
+      <div class="col-sm-10"><div id="mainBody">.col-sm-4</div></div>
+      <div class="col-sm-1"></div>
     </div>
+  </div>
+  
+</body>
+<% include ../views/footer %>
 <script>
 $(document).ready(function(){
-    var $result = $('#body'); 
-    $result.load('/about');
+    function removeActiveClasses(){
+      $('#graphi').removeClass('active');
+      $('#navi').removeClass('active');
+      $('#abouti').removeClass('active');
+      $('#teami').removeClass('active');
+      $('#subteami').removeClass('active');
+      $('#homei').removeClass('active');
+    }
+
+    var $result = $('#mainBody'); 
+
+    $result.load('/home');
+    $('#homei').addClass('active');
+
     $('#nav .nav li #graph').click(function() {
-       $result.load('/graph');
+      $result.load('/graph');
+      removeActiveClasses();
+      $('#graphi').addClass('active');
     });
-    $('#nav .nav li #navigation').click(function() {
-       $result.load('/navigation');
+    $('#nav .nav li #navigation').click (function() {
+      $result.load('/navigation');
+      removeActiveClasses();
+      $('#navi').addClass('active'); 
     });
+
     $('#nav .nav li #about').click(function() {
        $result.load('/about');
+       removeActiveClasses();
+       $('#abouti').addClass('active');
     });
     $('#nav .nav li #team').click(function() {
        $result.load('/team');
+       removeActiveClasses();
+       $('#teami').addClass('active');
+    });
+    $('#nav .navbar-header #homei').click(function() {
+       $result.load('/home');
+       removeActiveClasses();
+       $('#homei').addClass('active');
     });
     $('#nav .nav li #subteams').click(function() {
        $result.load('/subteams');
+       removeActiveClasses();
+       $('#subteami').addClass('active');
     });
   });
 </script>
-</body>
+
 </html>

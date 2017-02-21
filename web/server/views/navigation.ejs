@@ -3,17 +3,11 @@
   <head>
 
     <meta charset="utf-8">
-    <title>layout</title>
+    <title>Navigation</title>
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <h1>navigation</h1>
-    <button type="button" class="btn btn-warning" onclick="reset()">Reset</button>
-    <button type="button" class="btn btn-info" onclick="showRoute(directionsService, directionsDisplay)">Route</button>
-      <label>
-      <input id="toggle-autoroute" type="checkbox" data-toggle="toggle">
-      Auto Route </label>
-
+    
 <style>
        #map {
         height: 400px;
@@ -22,6 +16,12 @@
 </style>
   </head>
   <body>
+    <button type="button" class="btn btn-warning" onclick="reset()">Reset</button>
+    <button type="button" class="btn btn-info" onclick="showRoute(directionsService, directionsDisplay)">Route</button>
+    <button type="button" class="btn" onclick="editPoints()">Edit waypoints</button>
+      <label> <input id="toggle-autoroute" type="checkbox" data-toggle="toggle">
+      Auto Route </label>
+
     <div id="map"></div>
     <script>
       // google.maps.Marker array
@@ -52,7 +52,7 @@
             showRoute(directionsService, directionsDisplay);
           }
           else{
-            displayAllMarkers(map, directionsDisplay)
+            //displayAllMarkers(map, directionsDisplay)
             //need to remove route when autoroute if off directionsDisplay.setMap(null);
           }
          });
@@ -66,6 +66,15 @@
             }
           }
 
+      }
+
+      function editPoints(){
+        if(directionsDisplay != null) {
+          directionsDisplay.setMap(null);
+          directionsDisplay = new google.maps.DirectionsRenderer;
+          directionsDisplay.setMap(map);
+        }
+        displayAllMarkers(map, directionsDisplay);
       }
 
       function placeMarker(latLng, map) {
