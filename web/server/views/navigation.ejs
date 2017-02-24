@@ -175,7 +175,7 @@
       var pointsJSON = {
         points: []
       };
-      var legs = route.legs
+      
       // string encoding of route
       console.log(route.overview_polyline)
       console.log("path:")
@@ -189,6 +189,9 @@
         }) 
       }
       console.log(JSON.stringify(pointsJSON));
+
+      var legs = route.legs
+      
       return pointsJSON
       /*for(var i = 0; i < legs.length; i++){
         steps=legs[i].steps;
