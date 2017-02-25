@@ -173,10 +173,36 @@
     function getRoutePoints(route){
       var points = []
       var pointsJSON = {
-        points: []
+        legs: []
       };
       
       // string encoding of route
+      for(var i = 0; i < route.legs.length; i++){
+        var legSteps = route.legs[i].steps
+        for (var k = 0; k < legSteps.length; k++){
+          var step = legSteps[k].path
+          var legJSON = {
+            points: []
+          };
+
+          for(var j = 0; j < step.length; j++){
+            var point = step[j]
+            var pointArr = [point.lat(), point.lng()]
+            points.push(pointArr)
+            legJSON.points.push({
+              "lat": point.lat(),
+              "lng": point.lng()
+            }) 
+          }
+          pointsJSON.legs.push(legJSON)
+      }
+
+        }
+        console.log("path: "+JSON.stringify(pointsJSON));
+      
+        return pointsJSON
+
+      /*
       console.log(route.overview_polyline)
       console.log("path:")
       for(var i = 0; i < route.overview_path.length; i++){
@@ -189,18 +215,9 @@
         }) 
       }
       console.log(JSON.stringify(pointsJSON));
-
-      var legs = route.legs
       
-      return pointsJSON
-      /*for(var i = 0; i < legs.length; i++){
-        steps=legs[i].steps;
-        while(steps.length!=0){
-          for(var i = 0; i < steps.length; i++){
-            step=steps[i]
-          }
-        }
-      }*/
+      return pointsJSON*/
+
     }
 
 

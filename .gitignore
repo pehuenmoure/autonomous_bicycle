@@ -1,4 +1,4 @@
 *.pyc
-
+.DS_Store
 web/server/node_modules
 
