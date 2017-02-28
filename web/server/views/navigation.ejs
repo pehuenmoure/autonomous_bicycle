@@ -13,15 +13,20 @@
         height: 400px;
         width: 100%;
        }
+       .buttons{
+        padding-bottom: 15px;
+        text-align: center;
+       }
 </style>
   </head>
   <body>
+  <div class="buttons">
     <button type="button" class="btn btn-warning" onclick="reset()">Reset</button>
     <button type="button" class="btn btn-info" onclick="showRoute(directionsService, directionsDisplay)">Route</button>
     <button type="button" class="btn" onclick="editPoints()">Edit waypoints</button>
       <label> <input id="toggle-autoroute" type="checkbox" data-toggle="toggle">
       Auto Route </label>
-
+    </div>
     <div id="map"></div>
     <script>
       // google.maps.Marker array
