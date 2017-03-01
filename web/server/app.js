@@ -1,4 +1,5 @@
 var express = require('express');
+var bodyParser = require('body-parser');
 var app = express();
 var path = require('path');
 var http = require('http');
@@ -6,9 +7,10 @@ var server = http.Server(app);
 var io = require('socket.io')(server);
 var SerialPort = require('serialport');
 var fs = require('fs');
+var waypoints;
 
 app.set('view engine', 'ejs');
-
+app.use(bodyParser.json()); // for parsing application/json
 app.use(express.static(path.join(__dirname, 'public')));
 
 
@@ -33,7 +35,7 @@ port.on('data', function(d){
 	row[col-1] = d-(col*1000);
 	if(col == 4){
 		data.push(row);
-		console.log(row);
+		//console.log(row);
 		io.emit('data', row);
 	}
 });
@@ -60,26 +62,35 @@ server.listen(8000, function(){
 
 //For Rendering webpages
 app.get('/graph', (req, res) => {
-    res.render('graph');
-   });
+	res.render('graph');
+});
 app.get('/navigation', (req, res) => {
-    res.render('navigation');
-   });
+	res.render('navigation');
+});
 app.get('/index', (req, res) => {
-    res.render('index');
-   });
+	res.render('index');
+});
 app.get('/about', (req, res) => {
-    res.render('about');
-   });
+	res.render('about');
+});
 app.get('/team', (req, res) => {
-    res.render('team');
-   });
+	res.render('team');
+});
 app.get('/subteams', (req, res) => {
-    res.render('subteams');
-   });
+	res.render('subteams');
+});
 app.get('/home', (req, res) => {
-    res.render('home');
-   });
+	res.render('home');
+});
+
+app.route('/secretdatatransfer')
+	.get(function (req, res) { //Handles sending data
+		res.send(JSON.stringify(waypoints));
+	})
+  .post(function (req, res) { //Handles recieving data
+  	console.log(req.body);
+  	waypoints = req.body;
+  })
 
 //=======================FOR WRITING TO FILE======================
 /*

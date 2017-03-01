@@ -1,11 +1,11 @@
  // google.maps.Marker array
-      var waypoints = []
+ var waypoints = []
 
-      var directionsDisplay;
-      var directionsService;
-      var map;
+ var directionsDisplay;
+ var directionsService;
+ var map;
 
-      function initMap() {
+ function initMap() {
         //directions views
         directionsDisplay = new google.maps.DirectionsRenderer;
         directionsService = new google.maps.DirectionsService;
@@ -29,16 +29,16 @@
             //displayAllMarkers(map, directionsDisplay)
             //need to remove route when autoroute if off directionsDisplay.setMap(null);
           }
-         });
+        });
       }
 
       function showRoute(directionsService, directionsDisplay){
         if(waypoints.length>1){
-            calculateAndDisplayRoute(directionsService, directionsDisplay);
-            for (var i = 0; i < waypoints.length; i++) {
-              waypoints[i].setMap(null);
-            }
+          calculateAndDisplayRoute(directionsService, directionsDisplay);
+          for (var i = 0; i < waypoints.length; i++) {
+            waypoints[i].setMap(null);
           }
+        }
 
       }
 
@@ -97,7 +97,7 @@
           travelMode: google.maps.TravelMode[selectedMode]
         }, function(response, status) {
           if (status == 'OK') {
-              directionsDisplay.setDirections(response); 
+            directionsDisplay.setDirections(response); 
           } else {
             window.alert('Directions request failed due to ' + status);
           }
@@ -111,17 +111,17 @@
       }
 
       function calculateAndDisplayRoute(directionsService, directionsDisplay) {
-          var wpts = []
-          for (var i = 1; i < waypoints.length-1; i++){
-            wpts.push({location: waypoints[i].getPosition(), stopover:false});
-          }      
+        var wpts = []
+        for (var i = 1; i < waypoints.length-1; i++){
+          wpts.push({location: waypoints[i].getPosition(), stopover:false});
+        }      
           // dont zoom until 3 points have been placed
-        if(waypoints.length < 3){
-          directionsDisplay.setOptions({ preserveViewport: true });
-        }
-        directionsService.route({
-          origin: waypoints[0].getPosition(),
-          destination: waypoints[waypoints.length-1].getPosition(),
+          if(waypoints.length < 3){
+            directionsDisplay.setOptions({ preserveViewport: true });
+          }
+          directionsService.route({
+            origin: waypoints[0].getPosition(),
+            destination: waypoints[waypoints.length-1].getPosition(),
           //max 25 waypoints (including start and end, need to deal with this case
           waypoints: wpts,
           //optimize changes order of waypoints to shortest route
@@ -131,8 +131,8 @@
           if (status === 'OK') {
             if (waypoints.length>1){
               directionsDisplay.setDirections(response);
-            var route = response.routes[0];
-            getRoutePoints(route);
+              var route = response.routes[0];
+              sendToApp(getRoutePoints(route));
             }
 
           } else {
@@ -140,8 +140,8 @@
             window.alert('Directions request failed due to ' + status);
           }
         });
-        
-      }
+
+        }
 
     // returns JSON of each points along the route
     function getRoutePoints(route){
@@ -169,28 +169,49 @@
             }) 
           }
           pointsJSON.legs.push(legJSON)
-      }
-
         }
-        console.log("path: "+JSON.stringify(pointsJSON));
-      
-        return pointsJSON
 
-      /*
-      console.log(route.overview_polyline)
-      console.log("path:")
-      for(var i = 0; i < route.overview_path.length; i++){
-        var point = route.overview_path[i]
-        var pointArr = [point.lat(), point.lng()]
-        points.push(pointArr)
-        pointsJSON.points.push({
-          "lat": point.lat(),
-          "lng": point.lng()
-        }) 
       }
-      console.log(JSON.stringify(pointsJSON));
+      console.log("path: "+JSON.stringify(pointsJSON));
       
-      return pointsJSON*/
-
+      return JSON.stringify(pointsJSON)
     }
+
+
+ function sendToApp(postData){
+      console.log(postData);
+      var url = "http://localhost:8000/secretdatatransfer";
+      var method = "POST";
+
+// You REALLY want async = true.
+// Otherwise, it'll block ALL execution waiting for server response.
+var async = true;
+
+var request = new XMLHttpRequest();
+
+// Before we send anything, we first have to say what we will do when the
+// server responds. This seems backwards (say how we'll respond before we send
+// the request? huh?), but that's how Javascript works.
+// This function attached to the XMLHttpRequest "onload" property specifies how
+// the HTTP response will be handled. 
+request.onload = function () {
+
+   // Because of javascript's fabulous closure concept, the XMLHttpRequest "request"
+   // object declared above is available in this function even though this function
+   // executes long after the request is sent and long after this function is
+   // instantiated. This fact is CRUCIAL to the workings of XHR in ordinary
+   // applications.
+
+   // You can get all kinds of information about the HTTP response.
+   var status = request.status; // HTTP response status, e.g., 200 for "200 OK"
+   var data = request.responseText; // Returned data, e.g., an HTML document.
+ }
+
+ request.open(method, url, async);
+
+ request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+// Actually sends the request to the server.
+request.send(postData);
+}
 
