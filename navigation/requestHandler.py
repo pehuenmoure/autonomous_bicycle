@@ -9,8 +9,8 @@ def convert(latitude, longitude):
 	""" Mercator map projection 
 	http://stackoverflow.com/questions/14329691/covert-latitude-longitude-point-to-a-pixels-x-y-on-mercator-projection """
 
-	mapWidth    = 1000
-	mapHeight   = 1000
+	mapWidth    = 20
+	mapHeight   = 20
 
 	x = (longitude+180)*(mapWidth/360.0)
 
@@ -56,8 +56,10 @@ def parse_json():
 			points.append(xy)
 			points2.append(xy2)
 
+	# Scaling Issue of points. Need to ZOOM IN because discrepancies are very small
 	print points
 	print points2
+	return points
 
 
 parse_json()

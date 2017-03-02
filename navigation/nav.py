@@ -2,6 +2,7 @@
 import numpy as np
 import math
 import sys
+import requestHandler
 
 
 class Map_Model(object):
@@ -240,11 +241,18 @@ class Bike(object):
 if __name__ == '__main__':
 	import simulator
 	new_bike = Bike((5,8), np.radians(0), .02)
+
 	new_map = Map_Model(new_bike, [[],[]], [])
-	new_map.draw_circle(center = (7,7), r = 5, n_points = 10, degrees = np.pi/4)
-	new_map.add_point((10,15))
-	new_map.add_point((15,15))
-	new_map.add_point((18,11))
+	points = requestHandler.parse_json()
+	new_map.add_path(points[0],points[1])
+	# new_map.draw_circle(center = (7,7), r = 5, n_points = 10, degrees = np.pi/4)
+	for p in points:
+		print "point 1,2,3", p
+		new_map.add_point(p)
+	
+	# new_map.add_point((10,15))
+	# new_map.add_point((15,15))
+	# new_map.add_point((18,11))
 	new_map.close_path()
 	# new_map.add_path((0,9),(10,9))
 	new_nav = Nav(new_map)
