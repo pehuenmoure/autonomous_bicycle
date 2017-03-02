@@ -68,6 +68,12 @@
         }
         // clear array
         waypoints = [];
+
+        for (var i = 0; i < testMarkers.length; i++) {
+          testMarkers[i].setMap(null);
+        }
+        // clear array
+        testMarkers = [];
         
         if(directionsDisplay != null) {
           directionsDisplay.setMap(null);
@@ -132,7 +138,9 @@
             if (waypoints.length>1){
               directionsDisplay.setDirections(response);
               var route = response.routes[0];
-              sendToApp(getRoutePoints(route));
+              var data = getRoutePoints(route);
+              logRoute(route, data);
+              sendToApp(data);
             }
 
           } else {
@@ -172,9 +180,31 @@
         }
 
       }
-      console.log("path: "+JSON.stringify(pointsJSON));
-      
       return JSON.stringify(pointsJSON)
+    }
+
+    var testMarkers = [];
+    function logRoute(route, data){
+      console.log("JSON data: "+data);
+
+      for(var i = 0; i < route.legs.length; i++){
+        var legSteps = route.legs[i].steps
+        for (var k = 0; k < legSteps.length; k++){
+          var step = legSteps[k].path
+          for(var j = 0; j < step.length; j++){
+            var point = step[j];
+
+            var newMarker = new google.maps.Marker({
+              position: {lat: point.lat(), lng: point.lng()},
+              map: map,
+              draggable: false,
+              icon: 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld='+k+'|FE6256|000000'
+          });
+            testMarkers.push(newMarker);
+
+          }
+        }
+      }
     }
 
 
