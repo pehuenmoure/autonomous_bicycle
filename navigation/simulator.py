@@ -80,7 +80,7 @@ class Simulator(object):
 		self.nav = nav
 		self.fig = plt.figure()
 		self.fig.set_dpi(100)
-		ax = plt.axes(xlim=(0, 20), ylim=(0, 20))
+		ax = plt.axes(xlim=(0, 100), ylim=(0, 100)) #I have been modifying the axis range 
 		self.bike_sim = bike_sim(map_model.bike)
 		ax.add_patch(self.bike_sim)
 		lc = mc.LineCollection(self.map_model.paths, linewidths=2,
@@ -92,7 +92,7 @@ class Simulator(object):
 		anim = animation.FuncAnimation(self.fig, self.update_bike,  
                                 frames=5000, 
                                 interval=10)
-		anim.save('nav_anim.mp4')
+		# anim.save('nav_anim.mp4')
 		print("Finished saving")
 		plt.show()
 

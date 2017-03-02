@@ -9,8 +9,8 @@ def convert(latitude, longitude):
 	""" Mercator map projection 
 	http://stackoverflow.com/questions/14329691/covert-latitude-longitude-point-to-a-pixels-x-y-on-mercator-projection """
 
-	mapWidth    = 20
-	mapHeight   = 20
+	mapWidth    = 100
+	mapHeight   = 100
 
 	x = (longitude+180)*(mapWidth/360.0)
 
@@ -20,7 +20,8 @@ def convert(latitude, longitude):
 
 	y = (mapHeight/2)-(mapWidth*mercN/(2*math.pi))
 
-	return (x,y)
+	# Hardcoded the scaling of the simulation, y - coordinate is flipped to appear properly
+	return (x*(100000)%100, mapWidth - y*(100000)%100)
 
 def convert2(latitude, longitude):
 	"""http://stackoverflow.com/questions/1019997/convert-lat-longs-to-x-y-co-ordinates"""

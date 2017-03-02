@@ -23,21 +23,27 @@ class Map_Model(object):
 	def add_path(self, p1, p2):
 		""" Adds a new path from p1 to p2 at the end of the path list """
 		self.paths.append([p1,p2])
-		print p1
-		print p2
 		self.waypoints[0].append(p1[0])
 		self.waypoints[0].append(p2[0])
 		self.waypoints[1].append(p1[1])
 		self.waypoints[1].append(p2[1])
 
+
 	def add_point(self, p):
-		previous_point = self.paths[-1][1]
-		self.paths.append([previous_point, p])
+		# Changed to this to handle adding the first point (when there is no previous point)!!!
+		if (len(self.paths) != 0):
+			previous_point = self.paths[-1][1]
+			self.paths.append([previous_point, p])
+		elif (len(self.waypoints[0])==1):
+			#If the first point had been added we create the first path from the first point to p
+			self.paths.append([(self.waypoints[0][0], self.waypoints[1][0]), p])
 		self.waypoints[0].append(p[0])
 		self.waypoints[1].append(p[1])
 
+
 	def close_path(self):
 		self.add_point(self.paths[0][0])
+
 
 	def draw_circle(self, center, r, n_points, degrees = 2*np.pi):
 		deg_inc = float(degrees)/n_points
@@ -228,7 +234,7 @@ class Bike(object):
 		self.xy_coord = xy_coord
 		self.direction = direction
 		self.speed = speed
-		self.h = 0.5
+		self.h = 1# I have modifies these values 
 		self.turning_r = 2
 
 	@property
@@ -240,20 +246,22 @@ class Bike(object):
 
 if __name__ == '__main__':
 	import simulator
-	new_bike = Bike((5,8), np.radians(0), .02)
 
-	new_map = Map_Model(new_bike, [[],[]], [])
+	
 	points = requestHandler.parse_json()
-	new_map.add_path(points[0],points[1])
+	new_bike = Bike((2,7), np.radians(0), .2)
+	new_map = Map_Model(new_bike, [[],[]], [])
+	# new_map.add_path(points[0],points[1])
 	# new_map.draw_circle(center = (7,7), r = 5, n_points = 10, degrees = np.pi/4)
 	for p in points:
 		print "point 1,2,3", p
+		print "paths are", new_map.paths
 		new_map.add_point(p)
 	
 	# new_map.add_point((10,15))
 	# new_map.add_point((15,15))
 	# new_map.add_point((18,11))
-	new_map.close_path()
+	# new_map.close_path()
 	# new_map.add_path((0,9),(10,9))
 	new_nav = Nav(new_map)
 	sim = simulator.Simulator(new_map, new_nav)
