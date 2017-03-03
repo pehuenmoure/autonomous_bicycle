@@ -71,8 +71,24 @@ app.get('/team', (req, res) => {
     res.render('team');
    });
 app.get('/subteams', (req, res) => {
-    res.render('subteams');
-   });
+	res.render('subteams');
+});
+app.get('/home', (req, res) => {
+	res.render('home');
+});
+
+app.route('/getwaypoints')
+	.get(function (req, res) { //Handles sending data
+		res.send(JSON.stringify(waypoints));
+	})
+  .post(function (req, res) { //Handles recieving data
+  	console.log(req.body);
+  	waypoints = req.body;
+  })
+
+app.post('/datastream', (req,res) =>{
+	console.log(req.body);
+})
 
 //=======================FOR WRITING TO FILE======================
 function dataToString(rawdata){
