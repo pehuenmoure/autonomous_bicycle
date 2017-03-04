@@ -2,8 +2,7 @@
 <html lang="en">  
   <head>
     <meta charset="utf-8">
-    <title>layout</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Raleway" />
 
 <style>
@@ -12,32 +11,68 @@
     font-family: Raleway;
     width: auto !important;
   }
-  body { padding-top: 70px; }
+  /*spacing below navbar*/
+  #navpad { 
+    padding-top: 85px; 
+  }
+  .navbar{
+    min-height: 0px;
+    font-size: 18px;
+  }
+  /*set text position in navbar*/
+  .navbar-nav li a {
+    line-height: 35px;
+  }
+  .navbar {
+    -webkit-box-shadow: 0 8px 6px -6px #999;
+    -moz-box-shadow: 0 8px 6px -6px #999;
+    box-shadow: 0 8px 6px -6px #999;
+  }
 
+  #logo {
+    width: 50px;
+    height: 50px; 
+  }
+
+  #homei {
+    margin-top: -5px;
+  }
 
 </style>
 
-<nav class="navbar navbar-inverse navbar-fixed-top" id="nav">
 
+</head>
+<nav class="navbar navbar-inverse navbar-fixed-top" id="nav">
+  <div class="container-fluid">
     <div class="navbar-header">
-      <a class="navbar-brand" href="/index">
-        <span class="glyphicon glyphicon glyphicon-globe"></span>
-        Autonomous Bicycle Team
-      </a>
-    </div>
-    <div>
+       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>                        
+      </button>
       <ul class="nav navbar-nav">
-        <li><a href="#" id="graph">Graph</a></li>
-        <li><a href="#" id="navigation">Navigation</a></li>
-        <li><a href="#" id="about">About</a></li>
-        <li><a href="#" id="team">Team</a></li>
-        <li><a href="#" id="subteams">Subteams</a></li>
+        <li id="homei">
+          <a class="navbar-brand" href="#home">
+            <img id="logo" src="/images/bikelogo.png" style="display: inline-block;">
+            <span style="display: inline-block;">Autonomous Bicycle Team</span>
+          </a>
+        </li>
       </ul>
     </div>
+
+    <div class="collapse navbar-collapse navbar-left" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li id="graphi"><a href="#graph" id="graph" >Graph</a></li>
+        <li id="navi"><a href="#navigation" id="navigation">Navigation</a></li>
+        <li id="abouti"><a href="#about" id="about">About</a></li>
+        <li id="teami"><a href="#team" id="team">Team</a></li>
+        <li id="subteami"><a href="#subteams" id="subteams">Subteams</a></li>
+      </ul>
+    </div>
+  </div>
 </nav>
 
-  </head>
-  <body>
+  <body id="navpad">
     
   </body>
 </html> 
