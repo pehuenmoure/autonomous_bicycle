@@ -22,18 +22,20 @@ SerialPort.list(function (err, ports) {
 		console.log(port.comName);
 		console.log(port.pnpId);
 		console.log(port.manufacturer);
-		if(port.manufacturer.includes('Arduino')){
+
+		if(port.manufacturer.indexOf('arduino')>-1){
+			console.log(port.comName);	
 			var myPort = new SerialPort(port.comName, {
 				parser: SerialPort.parsers.readline('\n')
 			});
 			//Setting up array that stores incoming data
 			var data = new Array(6);
 			myPort.on('data', function(d){
-				// console.log(d);
+				 console.log(d);
 				if(d>5000){
 					data[5] = d;
 					sendToApp(JSON.stringify(data)); //Should I reinitialize the array?
-					console.log(data);
+					//console.log(data);
 				}
 				else{
 					var col = Math.floor(Math.trunc(d)/1000);
