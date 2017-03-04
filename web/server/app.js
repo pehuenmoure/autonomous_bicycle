@@ -7,6 +7,7 @@ var server = http.Server(app);
 var io = require('socket.io')(server);
 var fs = require('fs');
 var waypoints;
+var data = [['lean angle','lean rate','front motor angle','rear speed','open column', 'micros']];
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.json()); // for parsing application/json
@@ -64,10 +65,14 @@ app.route('/getwaypoints')
   	waypoints = req.body;
   })
 
-app.post('/datastream', (req,res) =>{
-	console.log(req.body);
-	res.send(JSON.stringify(req.body));
-})
+app.route('/datastream')
+	.get(function (req, res) { //Handles sending data
+		res.send(data);
+	})
+  .post(function (req, res) { //Handles recieving data
+  	console.log(req.body);
+  	data.push(req.body);
+  })
 
 //=======================FOR WRITING TO FILE======================
 /*
