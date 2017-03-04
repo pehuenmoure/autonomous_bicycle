@@ -5,40 +5,13 @@ var path = require('path');
 var http = require('http');
 var server = http.Server(app);
 var io = require('socket.io')(server);
-var SerialPort = require('serialport');
 var fs = require('fs');
 var waypoints;
+var data = [['lean angle','lean rate','front motor angle','rear speed','open column', 'micros']];
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.json()); // for parsing application/json
 app.use(express.static(path.join(__dirname, 'public')));
-
-
-//For getting PortName
-if(!process.argv[2]){
-	console.error("Usage: Node " + process.argv[1] + " serialport needed");
-	process.exit(1);
-};
-
-//Initializing SerialPort Object
-var port = new SerialPort(process.argv[2], {
-	parser: SerialPort.parsers.readline('\n')
-});
-
-//Setting up array that stores incoming data
-var data = new Array(1);
-var row = new Array(4);
-
-port.on('data', function(d){
-	// console.log(d);
-	var col = Math.floor(Math.trunc(d)/1000);
-	row[col-1] = d-(col*1000);
-	if(col == 4){
-		data.push(row);
-		//console.log(row);
-		io.emit('data', row);
-	}
-});
 
 io.on('connect', function(socket){
 	console.log('a user connected');
@@ -83,13 +56,22 @@ app.get('/home', (req, res) => {
 	res.render('home');
 });
 
-app.route('/secretdatatransfer')
+app.route('/getwaypoints')
 	.get(function (req, res) { //Handles sending data
 		res.send(JSON.stringify(waypoints));
 	})
   .post(function (req, res) { //Handles recieving data
   	console.log(req.body);
   	waypoints = req.body;
+  })
+
+app.route('/datastream')
+	.get(function (req, res) { //Handles sending data
+		res.send(data);
+	})
+  .post(function (req, res) { //Handles recieving data
+  	console.log(req.body);
+  	data.push(req.body);
   })
 
 //=======================FOR WRITING TO FILE======================
