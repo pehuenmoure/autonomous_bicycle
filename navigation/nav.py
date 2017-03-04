@@ -236,8 +236,8 @@ class Bike(object):
 		self.xy_coord = xy_coord
 		self.direction = direction
 		self.speed = speed
-		self.h = 0.1# I have modifies these values 
-		self.turning_r = 0.02
+		self.h = 2# I have modifies these values 
+		self.turning_r = 2
 
 	@property
 	def vector(self):
@@ -245,13 +245,14 @@ class Bike(object):
 		return b/np.linalg.norm(b)
 
 
+# def getCommand
 
 if __name__ == '__main__':
 	import simulator
 
 	
 	points = requestHandler.parse_json()
-	new_bike = Bike((28754.499999999996, 63046.94172334247), np.radians(0), .002)
+	new_bike = Bike((10, 10), math.pi*2, 0.01)
 	new_map = Map_Model(new_bike, [[],[]], [])
 	# new_map.add_path(points[0],points[1])
 	# new_map.draw_circle(center = (7,7), r = 5, n_points = 10, degrees = np.pi/4)

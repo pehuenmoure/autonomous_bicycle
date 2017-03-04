@@ -98,6 +98,7 @@ class Simulator(object):
 
 	def update_bike(self, i):
 		self.bike_sim.update_bike()
+		print np.rad2deg(self.bike_sim.theta)
 		dir_to_turn = self.nav.direction_to_turn()
 		if dir_to_turn == 0:
 			#print('straight')
