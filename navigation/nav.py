@@ -33,9 +33,7 @@ class Map_Model(object):
 		# Changed to this to handle adding the first point (when there is no previous point)!!!
 		if (len(self.paths) != 0):
 			previous_point = self.paths[-1][1]
-			print "ANOTHA ONE"
 			self.paths.append([previous_point, p])
-			print self.paths
 		elif (len(self.waypoints[0])==1):
 			#If the first point had been added we create the first path from the first point to p
 			self.paths.append([(self.waypoints[0][0], self.waypoints[1][0]), p])
@@ -245,28 +243,46 @@ class Bike(object):
 		return b/np.linalg.norm(b)
 
 
-# def getCommand
+def command(x, y, heading, speed, waypoints):
+	""" Function to interact with Arundathi's simulation 
+		Example command-line code python nav.py '1.0' '1.0' '1.0' '1.0' '1.0 2.0 4.6' '1.0 2.0 4.6' 
+		to run it from command propt instead of getting called by Arundathi """
+	points = waypoints
+	new_bike = Bike((x,y), heading, speed)
+	new_map = Map_Model(new_bike, [[],[]], [])
+	for p in points:
+		new_map.add_point(p)
+	new_nav = Nav(new_map)
+	return new_nav.direction_to_turn()
+
 
 if __name__ == '__main__':
 	import simulator
 
+	# SIMULATOR CODE
+	# points = requestHandler.parse_json()
+	# new_bike = Bike((10, 10), math.pi*2, 0.01)
+	# new_map = Map_Model(new_bike, [[],[]], [])
+
+	# for p in points:
+	# 	print "point 1,2,3", p
+	# 	new_map.add_point(p)
 	
-	points = requestHandler.parse_json()
-	new_bike = Bike((10, 10), math.pi*2, 0.01)
-	new_map = Map_Model(new_bike, [[],[]], [])
-	# new_map.add_path(points[0],points[1])
-	# new_map.draw_circle(center = (7,7), r = 5, n_points = 10, degrees = np.pi/4)
-	for p in points:
-		print "point 1,2,3", p
-		print "paths are", new_map.paths
-		new_map.add_point(p)
-	
-	# new_map.add_point((10,15))
-	# new_map.add_point((15,15))
-	# new_map.add_point((18,11))
-	# new_map.close_path()
-	# new_map.add_path((0,9),(10,9))
-	new_nav = Nav(new_map)
-	sim = simulator.Simulator(new_map, new_nav)
-	sim.run()
+	# 	new_nav = Nav(new_map)
+	# sim = simulator.Simulator(new_map, new_nav)
+	# sim.run()
+
+	# ARUNDATHI CODE
+	x = float(sys.argv[1])
+	y = float(sys.argv[2])
+	heading = float(sys.argv[3])
+	speed = float(sys.argv[4])
+	x_coords_str = (sys.argv[5]).split(" ")
+	y_coords_str = (sys.argv[6]).split(" ")
+	x_coords = map(float, x_coords_str)
+	y_coords = map(float, y_coords_str)
+	waypoints = zip(x_coords, y_coords)
+	# OUTPUT
+	output = command(x, y, heading, speed, waypoints)
+	sys.stdout.write(str(output))
 
