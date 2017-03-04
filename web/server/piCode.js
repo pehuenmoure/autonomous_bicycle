@@ -26,7 +26,8 @@ SerialPort.list(function (err, ports) {
 		if(port.manufacturer.indexOf('arduino')>-1){
 			console.log(port.comName);	
 			var myPort = new SerialPort(port.comName, {
-				parser: SerialPort.parsers.readline('\n')
+				parser: SerialPort.parsers.readline('\n'),
+				baudRate: 9600
 			});
 			//Setting up array that stores incoming data
 			var data = new Array(6);
