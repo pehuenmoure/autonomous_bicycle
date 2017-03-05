@@ -45,7 +45,15 @@ myPort.on('data', function(d){
 	}
 	else{
 		var col = Math.floor(Math.trunc(d)/1000);
-		data[col-1] = d-(col*1000);
+		if (col == 1){
+			data[col-1] = d-(col*1500.0);
+		}else if (col == 2){
+			data[col-1] = d-(2500.0);
+		}else if (col == 3){
+			data[col-1] = d-(3500.0);
+		}else if (col == 4){
+			data[col-1] = d-(4500.0);
+		}
 		console.log(d)
 	}
 });
