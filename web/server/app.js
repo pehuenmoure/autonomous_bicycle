@@ -36,7 +36,7 @@ var myPort = new SerialPort(process.argv[2], {
 //Setting up array that stores incoming data
 var data = new Array(6);
 myPort.on('data', function(d){
-	//console.log(d);
+	console.log(d);
 	if(d>5000){
 		data[5] = d;
 		// sendToApp(JSON.stringify(data)); //Should I reinitialize the array?
@@ -107,7 +107,7 @@ app.route('/datastream')
   .post(function (req, res) { //Handles recieving data
   	console.log(req.body);
   	data.push(req.body);
-  })
+ })
 
 //=======================FOR WRITING TO FILE======================
 /*
