@@ -24,8 +24,9 @@ io.on('connect', function(socket){
 	});
 });
 
-var port = new SerialPort(process.argv[2], {
-	parser: SerialPort.parsers.readline('\r\n')
+var myPort = new SerialPort(process.argv[2], {
+	parser: SerialPort.parsers.readline('\r\n'),
+	baudRate: 115200
 });
 
 //Setting up array that stores incoming data
@@ -41,6 +42,7 @@ myPort.on('data', function(d){
 	else{
 		var col = Math.floor(Math.trunc(d)/1000);
 		data[col-1] = d-(col*1000);
+		console.log(d)
 	}
 });
 
