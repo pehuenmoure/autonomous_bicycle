@@ -17,7 +17,11 @@
     var data = [d0, d1, d2, d3]; // dataPoints
 
     var chart = new CanvasJS.Chart("chartContainer",{
-      backgroundColor: "gray",
+      //backgroundColor: "gray",
+      axisY:{
+        minimum: -2,
+        maximum: 2
+      },
       title :{
         text: "Live Data"
       },      
