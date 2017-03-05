@@ -24,39 +24,39 @@ io.on('connect', function(socket){
 	});
 });
 
-// SerialPort.list( function(err, ports){
-// 	console.log(ports)
-// });
+SerialPort.list( function(err, ports){
+	console.log(ports)
+});
 
-// var myPort = new SerialPort(process.argv[2], {
-// 	parser: SerialPort.parsers.readline('\r\n'),
-// 	baudRate: 115200
-// });
+var myPort = new SerialPort(process.argv[2], {
+	parser: SerialPort.parsers.readline('\r\n'),
+	baudRate: 115200
+});
 
-// //Setting up array that stores incoming data
-// var data = new Array(6);
-// myPort.on('data', function(d){
-// 	//console.log(d);
-// 	if(d>5000){
-// 		data[5] = d;
-// 		// sendToApp(JSON.stringify(data)); //Should I reinitialize the array?
-// 		// console.log(data);
-// 		io.emit('data-msg', data)
-// 	}
-// 	else{
-// 		var col = Math.floor(Math.trunc(d)/1000);
-// 		if (col == 1){
-// 			data[col-1] = d-(col*1500.0);
-// 		}else if (col == 2){
-// 			data[col-1] = d-(2500.0);
-// 		}else if (col == 3){
-// 			data[col-1] = d-(3500.0);
-// 		}else if (col == 4){
-// 			data[col-1] = 0;//d-(4500.0);
-// 		}
-// 		// console.log(d)
-// 	}
-// });
+//Setting up array that stores incoming data
+var data = new Array(6);
+myPort.on('data', function(d){
+	//console.log(d);
+	if(d>5000){
+		data[5] = d;
+		// sendToApp(JSON.stringify(data)); //Should I reinitialize the array?
+		// console.log(data);
+		io.emit('data-msg', data)
+	}
+	else{
+		var col = Math.floor(Math.trunc(d)/1000);
+		if (col == 1){
+			data[col-1] = d-(col*1500.0);
+		}else if (col == 2){
+			data[col-1] = d-(2500.0);
+		}else if (col == 3){
+			data[col-1] = d-(3500.0);
+		}else if (col == 4){
+			data[col-1] = 0;//d-(4500.0);
+		}
+		// console.log(d)
+	}
+});
 
 app.get('/', function(req, res){
 	// first page
