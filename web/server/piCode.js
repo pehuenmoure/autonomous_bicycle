@@ -69,6 +69,6 @@ function sendToApp(postData){
 
    request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 
-// Actually sends the request to the server.
-request.send(postData);
+	// Actually sends the request to the server.
+	request.send(postData);
 }
