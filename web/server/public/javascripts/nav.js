@@ -193,12 +193,24 @@
           var step = legSteps[k].path
           for(var j = 0; j < step.length; j++){
             var point = step[j];
-
             var newMarker = new google.maps.Marker({
               position: {lat: point.lat(), lng: point.lng()},
               map: map,
               draggable: false,
-              icon: 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld='+k+'|FE6256|000000'
+              label: { 
+                text: j.toString(),
+                color: 'white',
+                fontSize: "10px"
+
+              },
+              icon: {
+                path: google.maps.SymbolPath.CIRCLE,
+                fillColor: (k%2==0)? 'red' : 'blue',
+                fillOpacity: .4,
+                scale: 5,
+                strokeColor: 'white',
+                strokeWeight: 1  
+              }
           });
             testMarkers.push(newMarker);
 
