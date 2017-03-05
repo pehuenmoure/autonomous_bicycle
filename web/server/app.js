@@ -24,6 +24,10 @@ io.on('connect', function(socket){
 	});
 });
 
+SerialPort.list( function(err, ports){
+	console.log(ports)
+});
+
 var myPort = new SerialPort(process.argv[2], {
 	parser: SerialPort.parsers.readline('\r\n'),
 	baudRate: 115200
