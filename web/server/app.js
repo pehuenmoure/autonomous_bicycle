@@ -52,7 +52,7 @@ myPort.on('data', function(d){
 		}else if (col == 3){
 			data[col-1] = d-(3500.0);
 		}else if (col == 4){
-			data[col-1] = d-(4500.0);
+			data[col-1] = 0;//d-(4500.0);
 		}
 		// console.log(d)
 	}
