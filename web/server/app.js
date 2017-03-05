@@ -40,7 +40,7 @@ myPort.on('data', function(d){
 	if(d>5000){
 		data[5] = d;
 		// sendToApp(JSON.stringify(data)); //Should I reinitialize the array?
-		console.log(data);
+		// console.log(data);
 		io.emit('data-msg', data)
 	}
 	else{
