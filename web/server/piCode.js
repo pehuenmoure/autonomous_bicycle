@@ -55,7 +55,7 @@ server.listen(8080, function(){
 
 function sendToApp(postData){
 	console.log(postData);
-	var url = "http://localhost:8000/datastream";
+	var url = "http://cubike.herokuapp.com/datastream";
 	var method = "POST";
 	var async = true;
 
