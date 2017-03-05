@@ -54,7 +54,7 @@ myPort.on('data', function(d){
 		}else if (col == 4){
 			data[col-1] = d-(4500.0);
 		}
-		console.log(d)
+		// console.log(d)
 	}
 });
 

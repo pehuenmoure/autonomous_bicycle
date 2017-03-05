@@ -44,7 +44,7 @@
       for (var j = 0; j < 4; j++) { 
         data[j].push({
           x: xVal,
-          y: newData[j]
+          y: parseFloat(newData[j].toFixed(4))
         });
       };
       xVal++;
@@ -55,7 +55,7 @@
         });       
       }
       
-      //chart.render();   
+      chart.render();   
     };
 
     var socket = io();
