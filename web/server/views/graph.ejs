@@ -5,6 +5,7 @@
 </head>
 
 <body>
+  <button type="button" class="btn btn-warning" onclick="emit_button()">Download</button>
   <div id="chartContainer" style="height: 300px; width:100%;"></div>
   <table align = "center" id = data></table>
 
@@ -70,6 +71,10 @@
       for (i = 0; i < array.length; i++){
         s = s + "<th>" + array[i] + "</th>"
       }return s;
+    }
+
+    emit_button(){
+      socekt.emit('download');
     }
 
   </script>
