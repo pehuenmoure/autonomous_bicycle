@@ -62,13 +62,13 @@
 
     socket.on('data-msg', function(d){
       //console.log("data recieved - server side");
-      $('#data').prepend('<tr>' + format(d) + '</tr>');
+      //$('#data').prepend('<tr>' + format(d) + '</tr>');
       updateChart(d);
     });
 
     function format(array){
       var s = "";
-      for (i = 0; i < array.length; i++){
+      for (i = 0; i < 4; i++){
         s = s + "<th>" + array[i].toFixed(4) + "</th>"
       }return s;
     }
