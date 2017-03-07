@@ -222,7 +222,8 @@
 
  function sendToApp(postData){
       console.log(postData);
-      var url = "http://localhost:8000/secretdatatransfer";
+      //var url = "http://localhost:8000/secretdatatransfer";
+      var url = "https://" + window.location.hostname + "/secretdatatransfer";
       var method = "POST";
 
 // You REALLY want async = true.

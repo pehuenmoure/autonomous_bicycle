@@ -3,6 +3,7 @@ var bodyParser = require('body-parser');
 var app = express();
 var path = require('path');
 var http = require('http');
+//var CanvasJS = require('canvasjs');
 var server = http.Server(app);
 var io = require('socket.io')(server);
 var fs = require('fs');
@@ -14,6 +15,7 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.json()); // for parsing application/json
 app.use(express.static(path.join(__dirname, 'public')));
 
+
 io.on('connect', function(socket){
 	console.log('a user connected');
 
@@ -24,18 +26,19 @@ io.on('connect', function(socket){
 	});
 });
 
+/*
 SerialPort.list( function(err, ports){
 	console.log(ports)
-});
+});*/
 
-var myPort = new SerialPort(process.argv[2], {
+/*var port = process.env.port || (new SerialPort(process.argv[2], {
 	parser: SerialPort.parsers.readline('\r\n'),
 	baudRate: 115200
-});
+}));
 
 //Setting up array that stores incoming data
 var data = new Array(6);
-myPort.on('data', function(d){
+port.on('data', function(d){
 	console.log(d);
 	if(d>5000){
 		data[5] = d;
@@ -56,17 +59,22 @@ myPort.on('data', function(d){
 		}
 		// console.log(d)
 	}
-});
+});*/
 
 app.get('/', function(req, res){
 	// first page
 	res.render('index');
 });
 //app.use(express.static());
-
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => {
+  console.log(`App listening on port ${PORT}`);
+  console.log('Press Ctrl+C to quit.');
+});
+/*
 server.listen(8000, function(){
 	console.log('listening on 8000');
-});
+});*/
 
 //For Rendering webpages
 app.get('/graph', (req, res) => {
