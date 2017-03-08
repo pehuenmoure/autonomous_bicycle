@@ -525,6 +525,21 @@ void loop() {
       
       frontWheelControl((-1)*desiredVelocity, encoder_position);  //DESIRED VELOCITY SET TO NEGATIVE TO MATCH SIGN CONVENTION BETWEEN BALANCE CONTROLLER AND 
 
+
+      //GPS output
+      while (Serial3.available() > 0) 
+        gps.encode(Serial3.read());
+        
+        Serial.print("Latitude                      "); Serial.println(gps.location.lat(), 6);
+        Serial.print("Longitude                     "); Serial.println(gps.location.lng(), 6);
+     //   Serial.print("Hours                         "); Serial.println(gps.time.hour()); // Hour (0-23)
+       // Serial.print("Minutes                       "); Serial.println(gps.time.minute()); // Minute (0-59)
+        //Serial.print("Seconds                       "); Serial.println(gps.time.second()); // Second (0-59)
+        //Serial.print("Centiseconds                  "); Serial.println(gps.time.centisecond()); // 100ths of a second (0-99)
+        //Serial.print("Date                          "); Serial.println(gps.date.value()); // Raw date in DDMMYY format
+        Serial.print("Number of Satelites in use    "); Serial.println(gps.satellites.value()); // Number of satellites in use
+        //Serial.print("Course in degrees             "); Serial.println(gps.course.deg());
+
       
       //COMMENT OUT THE FOLLOWING PRINT STATMENTS WHEN DOING FULL TESTING, THOUGH THEY ARE NOT CALCULATED IN THE OUTPUTTED LOOP TIME (l_diff), they still will affect the PID function
       //Serial.println(String(imu_data.angle) + '\t' + String(imu_data.rate)  +  '\t' + String(encoder_position)/*  + '\t' + String(l_diff)*/) ;
@@ -537,21 +552,6 @@ void loop() {
         delayMicroseconds(interval - l_diff);
       }else{
       Serial.println("LOOP LENGTH WAS VIOLATED. LOOP TIME WAS: " + String(l_diff));
-
-      //GPS output
-      while (Serial3.available() > 0) 
-        gps.encode(Serial3.read());
-        
-        Serial.print("Latitude                      "); Serial.println(gps.location.lat(), 6);
-        Serial.print("Longitude                     "); Serial.println(gps.location.lng(), 6);
-        Serial.print("Hours                         "); Serial.println(gps.time.hour()); // Hour (0-23)
-        Serial.print("Minutes                       "); Serial.println(gps.time.minute()); // Minute (0-59)
-        Serial.print("Seconds                       "); Serial.println(gps.time.second()); // Second (0-59)
-        Serial.print("Centiseconds                  "); Serial.println(gps.time.centisecond()); // 100ths of a second (0-99)
-        Serial.print("Date                          "); Serial.println(gps.date.value()); // Raw date in DDMMYY format
-        Serial.print("Number of Satelites in use    "); Serial.println(gps.satellites.value()); // Number of satellites in use
-        Serial.print("Course in degrees             "); Serial.println(gps.course.deg());
-
 //      while(true){}
     //}
       }
