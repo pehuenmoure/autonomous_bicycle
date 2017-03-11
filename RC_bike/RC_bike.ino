@@ -6,7 +6,7 @@
 
 /*Define definite variables*/
 //GPS 
-TinyGPSPlus gps;
+TinyGPSPlus gps;,
 
 //Front Motor
 #define PWM_front 9
@@ -248,8 +248,8 @@ void setup()
     attachInterrupt(RC_CH2, calcSignal2, CHANGE);
     attachInterrupt(RC_CH6, calcSignal6, CHANGE);
 
-  Serial.begin(115200);
-  Serial3.begin(115200);
+  Serial.begin(115200);//PC baud rate
+  Serial3.begin(9600); //this is GPS baud rate (don't change this because GPS hardware is set to 9600)
   initIMU();
   
   //setup rc
@@ -532,8 +532,8 @@ void loop() {
         
         Serial.print("Latitude                      "); Serial.println(gps.location.lat(), 6);
         Serial.print("Longitude                     "); Serial.println(gps.location.lng(), 6);
-     //   Serial.print("Hours                         "); Serial.println(gps.time.hour()); // Hour (0-23)
-       // Serial.print("Minutes                       "); Serial.println(gps.time.minute()); // Minute (0-59)
+        //Serial.print("Hours                         "); Serial.println(gps.time.hour()); // Hour (0-23)
+        //Serial.print("Minutes                       "); Serial.println(gps.time.minute()); // Minute (0-59)
         //Serial.print("Seconds                       "); Serial.println(gps.time.second()); // Second (0-59)
         //Serial.print("Centiseconds                  "); Serial.println(gps.time.centisecond()); // 100ths of a second (0-99)
         //Serial.print("Date                          "); Serial.println(gps.date.value()); // Raw date in DDMMYY format
