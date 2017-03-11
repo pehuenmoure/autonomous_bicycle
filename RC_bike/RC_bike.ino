@@ -6,7 +6,7 @@
 
 /*Define definite variables*/
 //GPS 
-TinyGPSPlus gps;,
+TinyGPSPlus gps;
 
 //Front Motor
 #define PWM_front 9
