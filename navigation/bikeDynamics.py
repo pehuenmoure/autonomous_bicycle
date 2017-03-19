@@ -2,21 +2,6 @@ import numpy as np
 import math
 from constants import *
 
-class MainNavigation(object):
-
-
-	def __init__(self, x, y):
-		"""INSTANCE ATTRIBUTES: 
-		x [float list]: x - coordinates of waypoints
-		y [float list]: y - coordinates of waypoints """
-		
-		self.x_coords = x
-		self.y_coords = y
-		self.tstep = TIMESTEP 
-		self.tarray = []
-		self.currentSegment = 1
-
-
 
 class State(object):
 
@@ -32,9 +17,11 @@ class State(object):
 		self.v = v
 
 	
-	def rhs(self, steerD):
-		""" Modifies the state object to turn it into the next state """
+	def next_state(self, steerD):
+		""" Equivalent to rhs in Matlab. Modifies the state object to turn it into the next state """
+
 		deltaD = steerD
+
 		u = K1 * self.phi + K2 * self.w_r + K3 * (self.delta - deltaD)
 
 		if u>10:
@@ -51,13 +38,13 @@ class State(object):
 		wr_dot = (((-(self.v)**2)*self.delta) - B * self.v * u + G * L * self.phi)/(H*L)
 
 		# modifying state object 
-		self.xB = xdot
-		self.yB = ydot
-		self.phi = phi_dot
-		self.psi = psi_dot
-		self.delta = delta_dot
-		self.w_r = wr_dot
-		self.v = v_dot
+		self.xB = self.xB + xdot*TIMESTEP
+		self.yB = self.yB + ydot*TIMESTEP
+		self.phi = self.phi + phi_dot*TIMESTEP
+		self.psi = self.psi+ psi_dot*TIMESTEP
+		self.delta = self.delta + delta_dot*TIMESTEP
+		self.w_r = self.w_r + wr_dot*TIMESTEP
+		self.v = self.v + v_dot*TIMESTEP
 
 		return u
 
