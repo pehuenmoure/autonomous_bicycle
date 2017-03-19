@@ -42,10 +42,10 @@ class State(object):
 		else:
 			u = -10
 
-		xdot = self.v * math.cos(self.psi)
-		ydot = self.v * math.sin(self.psi)
+		xdot = self.v * np.cos(self.psi)
+		ydot = self.v * np.sin(self.psi)
 		phi_dot = self.w_r
-		psi_dot = (self.v/L)*(math.tan(self.delta)/math.cos(self.phi))
+		psi_dot = (self.v/L)*(np.tan(self.delta)/np.cos(self.phi))
 		delta_dot = u # ideal steer rate
 		v_dot = 0
 		wr_dot = (((-(self.v)**2)*self.delta) - B * self.v * u + G * L * self.phi)/(H*L)
