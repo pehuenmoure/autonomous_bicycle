@@ -2,6 +2,20 @@ import numpy as np
 import math
 from constants import *
 
+class MainNavigation(object):
+
+
+	def __init__(self, x, y):
+		"""INSTANCE ATTRIBUTES: 
+		x [float list]: x - coordinates of waypoints
+		y [float list]: y - coordinates of waypoints """
+		
+		self.x_coords = x
+		self.y_coords = y
+		self.tstep = TIMESTEP 
+		self.tarray = []
+		self.currentSegment = 1
+
 
 class State(object):
 
@@ -12,7 +26,7 @@ class State(object):
 		self.yB = yB
 		self.phi = phi
 		self.psi = psi
-		self.delta = delta
+		self.delta = delta # Steer Angle!!!!!!
 		self.w_r = w_r
 		self.v = v
 

@@ -163,6 +163,7 @@ class Nav(object):
 		self.target_path = self.find_closest_path()
 		distance = np.abs(self.distance_from_path())
 		delta = np.abs(self.displacement_to_turn())
+
 		if delta<distance:
 			return self.turn_perp()
 		else:
@@ -181,6 +182,7 @@ class Nav(object):
 		phi = (np.arccos(b_R[0])-np.pi/2)%(2*np.pi)
 		r = self.map_model.bike.turning_r
 		delta = r+r*np.sin(phi)
+
 		return delta
 
 
@@ -220,6 +222,15 @@ class Nav(object):
 		if disp_next - np.abs(distance_next)>-0.01:
 			closest_path = np.mod(closest_path + 1,len(self.map_model.paths))
 		return closest_path
+
+
+	def countersteer_distance(self):
+		""" Runs nav - bike dynamics interaction as many times in order to measure
+		the distance between beginning of countersteering and end of countersteering """
+		
+
+
+
 
 
 
