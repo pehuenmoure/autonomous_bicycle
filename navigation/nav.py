@@ -227,10 +227,6 @@ class Nav(object):
 	def countersteer_distance(self):
 		""" Runs nav - bike dynamics interaction as many times in order to measure
 		the distance between beginning of countersteering and end of countersteering """
-		
-
-
-
 
 
 
@@ -290,10 +286,13 @@ if __name__ == '__main__':
 	speed = float(sys.argv[4])
 	x_coords_str = (sys.argv[5]).split(" ")
 	y_coords_str = (sys.argv[6]).split(" ")
+	x_coords_str = filter(lambda a: a != "", x_coords_str)
+	y_coords_str = filter(lambda a: a != "", y_coords_str)
 	x_coords = map(float, x_coords_str)
 	y_coords = map(float, y_coords_str)
 	waypoints = zip(x_coords, y_coords)
 	# OUTPUT
 	output = command(x, y, heading, speed, waypoints)
 	sys.stdout.write(str(output))
+	
 

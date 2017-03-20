@@ -1,5 +1,5 @@
 # constants.py
-
+import math
 
 ######### mainNavigation constants
 
@@ -22,4 +22,5 @@ K3 = -20
 TIMESTEP = 1.0/100
 PAUSE = TIMESTEP
 
-
+# used in converting output of nav to steerD
+MAX_STEER = math.pi/6
