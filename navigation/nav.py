@@ -2,7 +2,7 @@
 import numpy as np
 import math
 import sys
-import requestHandler
+# import requestHandler
 
 
 class Map_Model(object):
@@ -263,8 +263,8 @@ def command(x, y, heading, speed, waypoints):
 	return new_nav.direction_to_turn()
 
 
-if __name__ == '__main__':
-	import simulator
+# if __name__ == '__main__':
+# 	import simulator
 
 	# SIMULATOR CODE
 	# points = requestHandler.parse_json()
@@ -279,20 +279,20 @@ if __name__ == '__main__':
 	# sim = simulator.Simulator(new_map, new_nav)
 	# sim.run()
 
-	# ARUNDATHI CODE
-	x = float(sys.argv[1])
-	y = float(sys.argv[2])
-	heading = float(sys.argv[3])
-	speed = float(sys.argv[4])
-	x_coords_str = (sys.argv[5]).split(" ")
-	y_coords_str = (sys.argv[6]).split(" ")
-	x_coords_str = filter(lambda a: a != "", x_coords_str)
-	y_coords_str = filter(lambda a: a != "", y_coords_str)
-	x_coords = map(float, x_coords_str)
-	y_coords = map(float, y_coords_str)
-	waypoints = zip(x_coords, y_coords)
-	# OUTPUT
-	output = command(x, y, heading, speed, waypoints)
-	sys.stdout.write(str(output))
+	# ARUNDATHI CODE - Interaction with Matlab
+	# x = float(sys.argv[1])
+	# y = float(sys.argv[2])
+	# heading = float(sys.argv[3])
+	# speed = float(sys.argv[4])
+	# x_coords_str = (sys.argv[5]).split(" ")
+	# y_coords_str = (sys.argv[6]).split(" ")
+	# x_coords_str = filter(lambda a: a != "", x_coords_str)
+	# y_coords_str = filter(lambda a: a != "", y_coords_str)
+	# x_coords = map(float, x_coords_str)
+	# y_coords = map(float, y_coords_str)
+	# waypoints = zip(x_coords, y_coords)
+	# # OUTPUT
+	# output = command(x, y, heading, speed, waypoints)
+	# sys.stdout.write(str(output))
 	
 
