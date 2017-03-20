@@ -120,6 +120,10 @@ class MainNavigation(object):
 			# Gathers motor commands
 			self.mot_commands.append(u)
 
+			# plt.scatter(TIMESTEP*k, u)
+			# plt.show()
+			# plt.pause(0.0001)
+
 			# Values of new state
 			new_xB = self.state.xB + values[0]*TIMESTEP
 			new_yB = self.state.yB + values[1]*TIMESTEP
@@ -164,7 +168,7 @@ class State(object):
 
 		if u > 10:
 			u = 10
-		else:
+		elif u < -10:
 			u = -10
 
 		xdot = self.v * np.cos(self.psi)
