@@ -108,7 +108,7 @@ class MainNavigation(object):
 			steerD = nav.command(xB, yB, thetaB, v, self.waypoints)
 			print steerD
 
-			steerD = steerD * MAX_STEER
+			steerD = steerD * MAX_STEER * (-1)
 
 			self.nav_commands.append(steerD)
 
