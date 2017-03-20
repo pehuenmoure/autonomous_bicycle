@@ -87,6 +87,8 @@ class Simulator(object):
 			color = "black")
 		ax.add_collection(lc)
 		plt.plot(self.map_model.waypoints[0], self.map_model.waypoints[1], 'ro')
+		
+
 
 	def run(self):
 		anim = animation.FuncAnimation(self.fig, self.update_bike,  
@@ -95,6 +97,7 @@ class Simulator(object):
 		# anim.save('nav_anim.mp4')
 		print("Finished saving")
 		plt.show()
+
 
 	def update_bike(self, i):
 		self.bike_sim.update_bike()
