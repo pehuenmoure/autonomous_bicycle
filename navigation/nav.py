@@ -164,7 +164,7 @@ class Nav(object):
 		distance = np.abs(self.distance_from_path())
 		delta = np.abs(self.displacement_to_turn())
 
-		delta = 6 * delta 
+		delta = delta + 7.63597379688 # VALUE I calculated using my overshoot calculation functions
 
 		if delta<distance:
 			return self.turn_perp()

@@ -76,7 +76,8 @@ class MainNavigation(object):
 		# plt.show()
 
 		while (k < 1000):
-
+			# if k > 200:
+			# 	print "OVERHSHOOT", self.overshoot_distance()
 			xB = self.state.xB
 			yB = self.state.yB
 			phiB = self.state.phi
@@ -139,7 +140,7 @@ class MainNavigation(object):
 			new_w_r = self.state.w_r + values[5]*TIMESTEP
 			new_v = self.state.v + values[6]*TIMESTEP
 
-
+			# slope = (new_yB - self.state.yB)/(new_xB - self.state.xB)
 			# print "SLOPE IS", slope
 
 			self.state = State(new_xB, new_yB, new_phi, new_psi, new_delta, new_w_r, new_v)
@@ -160,7 +161,7 @@ class MainNavigation(object):
 
 	def max_overshoot_point_state(self):
 		""" Finds point where slope bcomes zero """
-		same_rate = true
+		same_rate = True
 		#create copy of current state
 		current_state = State(self.state.xB, self.state.yB, self.state.phi, self.state.psi, self.state.delta, self.state.w_r, self.state.v)
 
@@ -198,8 +199,8 @@ class MainNavigation(object):
 			slope = (new_yB - current_state.yB)/(new_xB - current_state.xB)
 
 			if (len(slopes) != 0):
-				if ((slopes[len(slopes-1)] > 0 and slope < 0) or (slopes[len(slopes-1)]  < 0 and slope > 0)):
-					same_rate = false
+				if ((slopes[len(slopes)-1] > 0 and slope < 0) or (slopes[len(slopes)-1]  < 0 and slope > 0)):
+					same_rate = False
 
 			slopes.append(slope)
 
@@ -210,8 +211,10 @@ class MainNavigation(object):
 	def overshoot_distance(self):
 		""" Calculates overshoot distance """
 		state = self.max_overshoot_point_state()
-		target_path = nav.command(self.state.xB, self.state.yB, self.state.psi, self.state.v, self.waypoints)
+		target_path = nav.target_path_idx(self.state.xB, self.state.yB, self.state.psi, self.state.v, self.waypoints)
 		overshoot = nav.distance_from_target_path(state.xB, state.yB, state.psi, state.v, self.waypoints, target_path)
+		print "X COORDINATE", state.xB
+		print "Y COORDINATE", state.yB
 		return overshoot
 
 
