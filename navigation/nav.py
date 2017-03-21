@@ -164,6 +164,8 @@ class Nav(object):
 		distance = np.abs(self.distance_from_path())
 		delta = np.abs(self.displacement_to_turn())
 
+		delta = 6 * delta 
+
 		if delta<distance:
 			return self.turn_perp()
 		else:
@@ -227,6 +229,7 @@ class Nav(object):
 	def countersteer_distance(self):
 		""" Runs nav - bike dynamics interaction as many times in order to measure
 		the distance between beginning of countersteering and end of countersteering """
+		return None 
 
 
 
@@ -262,6 +265,31 @@ def command(x, y, heading, speed, waypoints):
 	new_nav = Nav(new_map)
 	return new_nav.direction_to_turn()
 
+# NEW FUNCTIONS ADDED, FOR INTERACTION WITH BIKE DYNAMICS
+
+def target_path_idx(x, y, heading, speed, waypoints):
+	""" Function to be called from bikeDynamcis!
+	    Returns index of closest path to the bike """
+	points = waypoints
+	new_bike = Bike((x,y), heading, speed)
+	new_map = Map_Model(new_bike, [[],[]], [])
+	for p in points:
+		new_map.add_point(p)
+	new_nav = Nav(new_map)
+	return new_nav.find_closest_path()
+
+
+def distance_from_target_path(x, y, heading, speed, waypoints, target_path):
+	""" Function to be called from bikeDynamcis!
+	    Returns distance from target path at index [target_path] """
+	points = waypoints
+	new_bike = Bike((x,y), heading, speed)
+	new_map = Map_Model(new_bike, [[],[]], [])
+	for p in points:
+		new_map.add_point(p)
+	new_nav = Nav(new_map)
+	return new_nav.distance_from_path(target_path)
+
 
 # if __name__ == '__main__':
 # 	import simulator
@@ -275,7 +303,7 @@ def command(x, y, heading, speed, waypoints):
 	# 	print "point 1,2,3", p
 	# 	new_map.add_point(p)
 	
-	# 	new_nav = Nav(new_map)
+	# new_nav = Nav(new_map)
 	# sim = simulator.Simulator(new_map, new_nav)
 	# sim.run()
 
