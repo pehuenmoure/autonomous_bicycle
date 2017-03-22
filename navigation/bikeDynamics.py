@@ -65,7 +65,9 @@ class MainNavigation(object):
 
 	
 	def loop(self):
-		""" Main loop that calls nav algorithm and updates state at each step """
+		""" Main loop that calls nav algorithm and then accounts for bike 
+		dynamics and updates state at each step """
+
 		# plt.plot(self.state.xB, self.state.yB, 'ro')
 		# plt.show()
 	
@@ -75,7 +77,7 @@ class MainNavigation(object):
 		# hl, = plt.plot([], [])
 		# plt.show()
 
-		while (k < 1000):
+		while (k < 800):
 			# if k > 200:
 			# 	print "OVERHSHOOT", self.overshoot_distance()
 			xB = self.state.xB
@@ -153,15 +155,60 @@ class MainNavigation(object):
     	# # Return list of all state objects gathered
     	# return self.all_states
 
-
+    #############################################################################
    	# IDEA
-	# find next zero slope point 
-	# calculate distance form line to point
-	# increase delta by that distance
+	# find next zero slope point in x-coord vs y-coord graph (bike trajecory)
+	# calculate distance from line to point (overshoot)
+	# increase delta by that distance in nav
+
+	############################################################################
+
+	""" Hey guys! So I want to explain what this code is in here. 
+
+	Basically, the function called loop is the main loop that was in matlab which 
+	calls the navigation algorithm and updates the state. It also calls a function called 
+	rhs (See below in class State) which has couple of equations. I accumulate a list of
+	all states that passed with the idea that we could either create plots after all states 
+	have been calculated (I am guessing that will be quicker) or we can do it like I have it now,
+	dynamically updating the plot during the while loop (Which is more fun :D). 
+
+	What I worked on today was figuring out a way to correct the overshoot using the iterative
+	approach we talked about. So my idea was to have a function that finds the point where
+	the slope is zero (yes this is very simplistic that works for a horizontal path) and then 
+	find the distance between that point and the target path and make it be the overshoot.
+	Then we could add that distance to delta to correct it. Basically, "max_overshoot_point" 
+	creates a copy of the currrent state and runs a loop until it finds the point where slope is 
+	zero. I also created some functions in nav to allow me to just use some functions we have 
+	already written instead of rewriting them, spacifically the functions are target_path_idx and
+	distance_from_target_path. All this is to calculate the overshoot. 
+
+	This is definitely not a good way. Ultimately instead of finding the zero slope point
+	it would be best to determine that point from the variables of the bike's state. Like 
+	find a way to know when countersteering starts and when it ends from the lean or the steer etc. 
+	But I have no idea what that condition is so I am trying to do it with the bike trajectory graph.
+
+	So I do have the overshoot function BUT I don't call it from nav now... Because I 
+	would have to import bikeDynamics in nav and I am trying to avoid it as long as I can because that 
+	might get messy and we might have to pass the bikeDynamics state to nav so that it can then call 
+	bikeDynamics.py and know the state.
+
+	What I tried to test this whole theory was calling the function to calculate the
+	overshoot in the loop and then manually hardcoded the overshoot distance in nav and it 
+	improved the result so much! I will post a picture in slack! (Still doesn't get in a straight line 
+	thought but oscillations are a lot better)
+
+	To calculate overhsoot distance uncomment lines 81 and 82 in the code to see how slot it is. I have k > 200 
+	because there are other zero slope points in the graph and I only want the one of the first oscillation.
+
+	THIS IS SO SLOW though :'( :'( 
+
+	"""
 
 	def max_overshoot_point_state(self):
-		""" Finds point where slope bcomes zero """
-		same_rate = True
+		""" Finds the state at the point where slope becomes zero """
+
+		same_rate = True # To figure out when we pass the slope = 0 point
+
 		#create copy of current state
 		current_state = State(self.state.xB, self.state.yB, self.state.phi, self.state.psi, self.state.delta, self.state.w_r, self.state.v)
 
@@ -208,13 +255,14 @@ class MainNavigation(object):
 
 		return current_state
 
+
 	def overshoot_distance(self):
 		""" Calculates overshoot distance """
 		state = self.max_overshoot_point_state()
 		target_path = nav.target_path_idx(self.state.xB, self.state.yB, self.state.psi, self.state.v, self.waypoints)
 		overshoot = nav.distance_from_target_path(state.xB, state.yB, state.psi, state.v, self.waypoints, target_path)
-		print "X COORDINATE", state.xB
-		print "Y COORDINATE", state.yB
+		# print "X COORDINATE", state.xB
+		# print "Y COORDINATE", state.yB
 		return overshoot
 
 
