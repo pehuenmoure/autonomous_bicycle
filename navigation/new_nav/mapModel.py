@@ -56,3 +56,4 @@ class Map_Model(object):
 			next_point = np.array(center) + np.array([r*np.cos(i*theta), r*np.sin(i*theta)])
 			self.add_point(next_point)
 
+
