@@ -6,8 +6,6 @@ import geometry
 import bikeState
 
 class Nav(object):
-	"""INSTANCE ATTRIBUTES:
-		map [Map object] """
 
 
 	def __init__(self, map_model):
@@ -22,7 +20,7 @@ class Nav(object):
 		bike_pos = (self.map_model.bike.xB, self.map_model.bike.yB)
 		distance = np.abs(geometry.distance_from_path(bike_pos, self.map_model.paths[self.target_path]))
 		delta = np.abs(self.displacement_to_turn())
-		delta = delta + 10 # VALUE I calculated using my overshoot calculation functions
+		# delta = delta + 10 # VALUE I calculated using my overshoot calculation functions
 		if delta<distance:
 			return self.turn_perp()
 		else:
@@ -76,7 +74,8 @@ class Nav(object):
 
 	def turn_perp(self):
 		""""""
-		path_vector = geometry.unit_vector(self.map_model.paths[self.target_path])
+		target_path = self.map_model.paths[self.target_path]
+		path_vector = geometry.unit_vector(target_path[0], target_path[1])
 		p_orig = path_vector
 		bike_pos = (self.map_model.bike.xB, self.map_model.bike.yB)
 		sign = geometry.get_sign(geometry.distance_from_path(bike_pos, self.map_model.paths[self.target_path]))

@@ -1,5 +1,5 @@
 import numpy as np
-import math
+from constants import *
 """ This module contains a class to represent the bike's state """
 
 
