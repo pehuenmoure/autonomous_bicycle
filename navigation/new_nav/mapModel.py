@@ -1,4 +1,5 @@
 import bikeState
+import numpy as np
 """ This module contains a class to represent the Map Model and all its functions """
 
 class Map_Model(object):
@@ -7,10 +8,19 @@ class Map_Model(object):
 	def __init__(self, bike, waypoints, obstacles, paths = []):
 		""" Initializes the Map Model """
 		self.bike = bike
-		self.paths = paths
+		self.paths = self.init_paths(waypoints)
 		self.waypoints = waypoints
 		self.obstacles = obstacles
 
+	def init_paths(self, waypoints):
+		""" Initializes paths fron input waypoints """
+		paths = []
+		if len(waypoints) < 2:
+			return paths
+		else:
+			for i in range(1, len(waypoints)):
+				paths.append((waypoints[i-1], waypoints[i]))
+			return paths
 
 	def add_path(self, p1, p2):
 		""" Adds a new path from point p1 to point p2 at the end of the path list """
