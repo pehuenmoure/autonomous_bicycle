@@ -6,7 +6,6 @@ class Map_Model(object):
 
 	def __init__(self, bike, waypoints, obstacles, paths = []):
 		""" Initializes the Map Model """
-
 		self.bike = bike
 		self.paths = paths
 		self.waypoints = waypoints
@@ -15,7 +14,6 @@ class Map_Model(object):
 
 	def add_path(self, p1, p2):
 		""" Adds a new path from point p1 to point p2 at the end of the path list """
-
 		self.paths.append([p1,p2])
 		self.waypoints[0].append(p1[0])
 		self.waypoints[0].append(p2[0])
@@ -27,7 +25,6 @@ class Map_Model(object):
 		""" Adds a new point p to the list of waypoints. If it is not the first point added in 
 		the waypoints list, then a path is also added from the last point in waypoints to the 
 		new point p that we add """
-		
 		if (len(self.paths) != 0):
 			previous_point = self.paths[-1][1]
 			self.paths.append([previous_point, p])
@@ -40,13 +37,11 @@ class Map_Model(object):
 
 	def close_path(self):
 		""" Adds a path from the last point to the first point in the waypoints list """
-
 		self.add_point(self.paths[0][0])
 
 
 	def draw_circle(self, center, r, n_points, degrees = 2*np.pi):
 		""" Draws a circle with given characteristics """
-
 		deg_inc = float(degrees)/n_points
 		theta = deg_inc
 		p0 = np.array(center) + np.array([r, 0])
