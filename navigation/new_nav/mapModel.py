@@ -1,4 +1,4 @@
-
+import bikeState
 """ This module contains a class to represent the Map Model and all its functions """
 
 class Map_Model(object):

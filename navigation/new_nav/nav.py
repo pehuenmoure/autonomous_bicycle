@@ -3,6 +3,7 @@ import numpy as np
 import math
 import sys
 import geometry
+import bikeState
 
 class Nav(object):
 	"""INSTANCE ATTRIBUTES:
