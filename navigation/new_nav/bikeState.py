@@ -1,5 +1,7 @@
-
+import numpy as np
+import math
 """ This module contains a class to represent the bike's state """
+
 
 class Bike(object):
 

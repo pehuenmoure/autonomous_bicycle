@@ -36,13 +36,13 @@ class Nav(object):
 		bike_position = (self.map_model.bike.xB, self.map_model.bike.yB)
 		for path_index in range(len(self.map_model.paths)):
 			nearest_point = geometry.nearest_point_on_path(self.map_model.paths[path_index], bike_position)
-			distance_to_bike = geometry.dist(nearest_point, bike_position)
+			distance_to_bike = geometry.distance(nearest_point, bike_position)
 			if (closest_distance > distance_to_bike):
 				closest_distance = distance_to_bike
 				closest_path = path_index 
 		disp_next = self.displacement_to_turn(target_path = (closest_path+1)%len(self.map_model.paths))
 		target_path = (closest_path+1)%len(self.map_model.paths)
-		distance_next = geometry.distance_from_path(bike_position, self.map_model.paths(target_path))
+		distance_next = geometry.distance_from_path(bike_position, self.map_model.paths[target_path])
 		if disp_next - np.abs(distance_next)>-0.01:
 			closest_path = np.mod(closest_path + 1,len(self.map_model.paths))
 		return closest_path
@@ -54,7 +54,7 @@ class Nav(object):
 		should enter the s curve based on its turning radius """
 		if target_path is None:
 			target_path = self.target_path
-		p = geometry.unit_vector(self.map_model.paths[target_path])
+		p = geometry.unit_vector(self.map_model.paths[target_path][0], self.map_model.paths[target_path][1])
 		if b is None:
 			b = self.map_model.bike.vector
 		R = np.array([[p[0], p[1]], [-p[1], p[0]]])
@@ -68,7 +68,8 @@ class Nav(object):
 
 	def turn_parallel(self):
 		""""""
-		path_vector = geometry.unit_vector(self.map_model.paths[self.target_path])
+		target_path = self.map_model.paths[self.target_path]
+		path_vector = geometry.unit_vector(target_path[0], target_path[1])
 		path_perp = np.array([-path_vector[1], path_vector[0]])
 		return self.turn_helper(path_perp)
 

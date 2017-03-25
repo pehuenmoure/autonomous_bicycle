@@ -8,4 +8,5 @@ if __name__ == '__main__':
 	waypoints = [(0.1, 0.1), (30.1, 0.1), (31.1, 0.1)]
 	new_map_model = mapModel.Map_Model(new_bike, waypoints, [], [])
 	new_nav = nav.Nav(new_map_model)
+	print new_nav.direction_to_turn()
 	
