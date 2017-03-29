@@ -27,8 +27,6 @@ def get_sign(v):
 def nearest_point_on_path(path, point):
 	""" Returns: the nearest point on the [path] to the [point] """
 	point1 = path[0]
-	print point1
-	print path
 	point2 = path[1]
 	dist = distance(point1, point2)
 	d2 = dist2(point1, point2)
@@ -68,4 +66,11 @@ def distance_from_path(point, target_path):
 	r = p1 - bike_coords
 	dist = np.sum(v_perp*r)
 	return dist
+
+def line_angle(line):
+	""" Returns: angle of given path in global frame """
+	point1 = line[0]
+	point2 = line[1]
+	return np.arcsin((point2[1]-point1[1])/(point2[0]-point1[0]))
+
 
