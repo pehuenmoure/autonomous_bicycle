@@ -23,7 +23,8 @@ class Nav(object):
 		bike_pos = (self.map_model.bike.xB, self.map_model.bike.yB)
 		distance = np.abs(geometry.distance_from_path(bike_pos, self.map_model.paths[self.target_path]))
 		delta = np.abs(self.displacement_to_turn())
-		delta = delta + 6.08399407205 # VALUE I calculated using my overshoot calculation functions
+		delta = 7.81166015145 # undershoot of -0.808198581543 (setting delta equal to result of overshoot2)
+		# delta = delta + 6.11776258705 # VALUE I calculated using my overshoot calculation functions (gives undershoot of -0.808198581543)
 		if delta<distance:
 			return self.turn_perp()
 		else:
@@ -115,7 +116,7 @@ class Nav(object):
 			path_angle = geometry.line_angle(nav_copy.map_model.paths[nav_copy.target_path])
 			bike_angle = nav_copy.map_model.bike.psi
 			# print "VALUEE", math.fabs(path_angle - bike_angle)
-			if (math.fabs(path_angle - bike_angle) < 0.1):
+			if (math.fabs(path_angle - bike_angle) < 0.005): # If caught in infinite loop means that this value should be greater
 				point_found = True
 
 		point = (nav_copy.map_model.bike.xB, nav_copy.map_model.bike.yB)
@@ -123,6 +124,38 @@ class Nav(object):
 
 		return distance
 
+
+	def calc_overshoot2(self):
+		"""Returns: value of delta based on the displacement to turn of the bike """
+		bike = self.map_model.bike
+		bike_copy = bikeState.Bike(bike.xB, bike.yB, bike.phi, bike.psi, bike.delta, bike.w_r, bike.v)
+		map_model_copy = mapModel.Map_Model(bike_copy, self.map_model.waypoints, self.map_model.obstacles, self.map_model.paths)
+		nav_copy = Nav(map_model_copy)
+		initial_position = (map_model_copy.bike.xB, map_model_copy.bike.yB)
+		point_found = False
+
+		while (point_found != True):
+
+			steerD = nav_copy.turn_parallel()
+			updated_bike = bikeSim.new_state(nav_copy.map_model.bike, steerD)
+			bike_copy = updated_bike
+			nav_copy.map_model.bike = bike_copy # Maybe this is not necessary because before we modified bike object folder
+
+			path_angle = geometry.line_angle(nav_copy.map_model.paths[nav_copy.target_path])
+			bike_angle = nav_copy.map_model.bike.psi
+			# print "VALUEE", math.fabs(path_angle - bike_angle)
+			if (math.fabs(path_angle - bike_angle) < 0.005):
+				point_found = True
+
+		final_position = (nav_copy.map_model.bike.xB, nav_copy.map_model.bike.yB)
+		dist = geometry.distance(initial_position, final_position)
+		angle_path = geometry.line_angle(nav_copy.map_model.paths[nav_copy.target_path])
+		angle_line = geometry.line_angle((final_position, initial_position))
+		angle_between = np.abs(angle_path - angle_line)
+
+		delta = np.sin(angle_between)*dist
+
+		return delta # vertical displacement of final position from initial position (delta)
 
 
 

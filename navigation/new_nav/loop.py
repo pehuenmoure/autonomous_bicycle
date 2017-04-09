@@ -16,7 +16,7 @@ def main_loop(nav, bike):
 	to get the updated state and plots the new state """
 	k = 0 
 
-	while (k < 500):
+	while (k < 700):
 
 		#plotting
 		plt.scatter(bike.xB, bike.yB)
@@ -35,12 +35,13 @@ def main_loop(nav, bike):
 		new_state = bikeSim.new_state(bike, steerD)
 		bike = new_state
 		nav.map_model.bike = bike
-		if k == 7:
-			print "HELLOOOO", nav.calc_overshoot()
-		# path_angle = geometry.line_angle(nav.map_model.paths[nav.target_path])
-		# bike_angle = nav.map_model.bike.psi
+		# if k == 7:
+			# print "HELLOOOO", nav.calc_overshoot()
+			# print "HELLOOOO", nav.calc_overshoot()
+		path_angle = geometry.line_angle(nav.map_model.paths[nav.target_path])
+		bike_angle = nav.map_model.bike.psi
 
-		# print "ANGLE BETWEEN", math.fabs(path_angle - bike_angle)
+		print "ANGLE BETWEEN", math.fabs(path_angle - bike_angle)
 
 		k = k + 1
 
