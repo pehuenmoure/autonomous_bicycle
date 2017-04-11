@@ -1,4 +1,5 @@
 import numpy as np
+import math
 """ This module contains all the vector/math functions """
 
 def unit_vector(p1, p2):
@@ -48,8 +49,8 @@ def angle_from_path(bike_direction, p1, p2):
 	bike_vector = (math.cos(bike_direction), math.sin(bike_direction))
 	path_vector = (p2[0]-p1[0], p2[1]-p1[1])
 	dot_product = bike_vector[0]*path_vector[0] + bike_vector[1]*path_vector[1]
-	angle = get_sign(dot_product)*math.acos(dot_product/dist(point1, point2))
-	return np.degrees(angle)
+	angle = get_sign(dot_product)*math.acos(dot_product/distance(p1, p2))
+	return angle
 
 
 def distance_from_path(point, target_path):
@@ -68,7 +69,7 @@ def distance_from_path(point, target_path):
 	return dist
 
 def line_angle(line):
-	""" Returns: angle of given path in global frame """
+	""" Returns: angle of given path in global frame (radsss) """
 	point1 = line[0]
 	point2 = line[1]
 	return np.arcsin((point2[1]-point1[1])/(point2[0]-point1[0]))

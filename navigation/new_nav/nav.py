@@ -7,6 +7,7 @@ import bikeState
 #imported bikSim to be able to calculate overshoots distance
 import bikeSim
 import mapModel
+from constants import *
 
 class Nav(object):
 
@@ -23,7 +24,7 @@ class Nav(object):
 		bike_pos = (self.map_model.bike.xB, self.map_model.bike.yB)
 		distance = np.abs(geometry.distance_from_path(bike_pos, self.map_model.paths[self.target_path]))
 		delta = np.abs(self.displacement_to_turn())
-		delta = 7.81166015145 # undershoot of -0.808198581543 (setting delta equal to result of overshoot2)
+		# delta = 7.81166015145 # undershoot of -0.808198581543 (setting delta equal to result of overshoot2)
 		# delta = delta + 6.11776258705 # VALUE I calculated using my overshoot calculation functions (gives undershoot of -0.808198581543)
 		if delta<distance:
 			return self.turn_perp()
@@ -158,6 +159,35 @@ class Nav(object):
 		return delta # vertical displacement of final position from initial position (delta)
 
 
+	def close_enough(self):
+		""" Returns: true if bike is close enough to the target path line so that 
+		pd controller takes over, false otherwise """
+		distance = geometry.distance_from_path((self.map_model.bike.xB, self.map_model.bike.yB), self.map_model.paths[self.target_path])
+		print "distance is ", distance
+		return (np.abs(distance)<5)
+
+
+	def controller_direction_to_turn(self):
+		""" pd controller """
+		path = self.map_model.paths[self.target_path]
+		angle_from_path = self.map_model.bike.psi - geometry.line_angle(path)#from -pi to pi
+		
+		k1 = .35 #gain for distance correction
+		k2 = 1 #gain for angle correction
+		d = geometry.distance_from_path((self.map_model.bike.xB, self.map_model.bike.yB), self.map_model.paths[self.target_path]) #distance
+		
+		# d = np.abs(d)
+		steerD = k1*d + k2*angle_from_path
+		print "steeeerD", steerD
+		if (steerD > MAX_STEER):
+			print "one"
+			steerD = MAX_STEER
+		elif (steerD < -MAX_STEER):
+			print "two"
+			steerD = -MAX_STEER
+		#else don't do anything
+		print "steerD is", steerD
+		return steerD
 
 
 

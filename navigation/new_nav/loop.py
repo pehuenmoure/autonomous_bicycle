@@ -16,7 +16,7 @@ def main_loop(nav, bike):
 	to get the updated state and plots the new state """
 	k = 0 
 
-	while (k < 700):
+	while (k < 2000):
 
 		#plotting
 		plt.scatter(bike.xB, bike.yB)
@@ -28,8 +28,15 @@ def main_loop(nav, bike):
 		# plt.show()
 		# plt.pause(0.00001)
 
+		# if (nav.close_enough()):
+		steerD = nav.controller_direction_to_turn() #pd cotnroller takes over
+			# print "pd Controller takes over"
+		# else:
+		# 	steerD = nav.direction_to_turn()
+		# 	steerD = steerD * MAX_STEER * (-1)
 
-		steerD = nav.direction_to_turn()
+		# steerD = nav.controller_direction_to_turn() #pd cotnroller takes over
+
 		# print steerD
 		# if new state has new target path then recalculate delta
 		new_state = bikeSim.new_state(bike, steerD)
@@ -38,10 +45,10 @@ def main_loop(nav, bike):
 		# if k == 7:
 			# print "HELLOOOO", nav.calc_overshoot()
 			# print "HELLOOOO", nav.calc_overshoot()
-		path_angle = geometry.line_angle(nav.map_model.paths[nav.target_path])
-		bike_angle = nav.map_model.bike.psi
+		# path_angle = geometry.line_angle(nav.map_model.paths[nav.target_path])
+		# bike_angle = nav.map_model.bike.psi
 
-		print "ANGLE BETWEEN", math.fabs(path_angle - bike_angle)
+		# print "ANGLE BETWEEN", math.fabs(path_angle - bike_angle)
 
 		k = k + 1
 
@@ -50,7 +57,7 @@ def main_loop(nav, bike):
 
 if __name__ == '__main__':
 	
-	new_bike = bikeState.Bike(-1, -15, 0.1, math.pi/3, 0, 0, 3.57)
+	new_bike = bikeState.Bike(-1, -1, 0.1, 0, 0, 0, 3.57)
 	waypoints = [(0.1, 0.1), (30.1, 0.1), (31.1, 0.1)]
 	new_map_model = mapModel.Map_Model(new_bike, waypoints, [], [])
 	new_nav = nav.Nav(new_map_model)

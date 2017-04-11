@@ -5,7 +5,6 @@ def new_state(bike, steerD):
 	""" Returns new bike state object after it passes through bike dynamics """
 	# Get navigation command
 	# steerD = nav.command(bike.xB, bike.yB, bike.psi, bike.v, waypoints)
-	steerD = steerD * MAX_STEER * (-1)
 	rhs_result = bike.rhs(steerD)
 	u = rhs_result[0]
 	values = rhs_result[1]
